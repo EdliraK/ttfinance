@@ -9,177 +9,78 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
-    --paper: #F6F2E9;
-    --paper-raised: #FBF8F2;
-    --ink: #1E2636;
-    --ink-soft: #5B6472;
-    --brass: #9C7A32;
-    --brass-light: #C7A968;
-    --line: #DBD2BC;
-    --stamp-red: #A8382C;
-    --stamp-red-bg: rgba(168,56,44,0.07);
-    --stamp-green: #2E6B4E;
-    --stamp-green-bg: rgba(46,107,78,0.08);
+    --paper: #F6F2E9; --paper-raised: #FBF8F2; --ink: #1E2636; --ink-soft: #5B6472;
+    --brass: #9C7A32; --brass-light: #C7A968; --line: #DBD2BC;
+    --stamp-red: #A8382C; --stamp-red-bg: rgba(168,56,44,0.07);
+    --stamp-green: #2E6B4E; --stamp-green-bg: rgba(46,107,78,0.08);
     --focus: #2E5FA8;
   }
   *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--paper);
-    color:var(--ink);
-    font-family:'Inter',system-ui,sans-serif;
-    line-height:1.5;
-  }
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.5;}
   .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 
   header.masthead{
-    border-bottom:3px double var(--brass);
-    padding-bottom:18px;
-    margin-bottom:32px;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    flex-wrap:wrap;
-    gap:10px;
+    border-bottom:3px double var(--brass);padding-bottom:18px;margin-bottom:32px;
+    display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;
   }
-  header.masthead h1{
-    font-family:'Fraunces',serif;
-    font-weight:700;
-    font-size:clamp(28px,4vw,38px);
-    margin:0;
-    letter-spacing:-0.01em;
-  }
-  header.masthead .kicker{
-    font-family:'IBM Plex Mono',monospace;
-    text-transform:uppercase;
-    letter-spacing:0.12em;
-    font-size:11px;
-    color:var(--brass);
-    margin-bottom:4px;
-  }
-  header.masthead .today{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:13px;
-    color:var(--ink-soft);
-  }
-  header.masthead .back-btn{
-    background:none;border:1px solid var(--line);color:var(--ink);
-    font-family:'IBM Plex Mono',monospace;font-size:12.5px;
-    padding:8px 14px;border-radius:2px;cursor:pointer;
-  }
+  header.masthead h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(26px,4vw,36px);margin:0;letter-spacing:-0.01em;}
+  header.masthead .kicker{font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.12em;font-size:11px;color:var(--brass);margin-bottom:4px;}
+  header.masthead .today{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-soft);}
+  header.masthead .back-btn{background:none;border:1px solid var(--line);color:var(--ink);font-family:'IBM Plex Mono',monospace;font-size:12.5px;padding:8px 14px;border-radius:2px;cursor:pointer;}
   header.masthead .back-btn:hover{border-color:var(--brass);color:var(--brass);}
 
-  section.panel{
-    background:var(--paper-raised);
-    border:1px solid var(--line);
-    border-radius:2px;
-    padding:24px;
-    margin-bottom:24px;
-    position:relative;
-  }
+  section.panel{background:var(--paper-raised);border:1px solid var(--line);border-radius:2px;padding:24px;margin-bottom:24px;position:relative;}
   section.panel::before{
-    content:attr(data-step);
-    position:absolute;
-    top:-13px;
-    left:20px;
-    background:var(--paper);
-    padding:0 10px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    letter-spacing:0.1em;
-    color:var(--brass);
-    text-transform:uppercase;
+    content:attr(data-step);position:absolute;top:-13px;left:20px;background:var(--paper);padding:0 10px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:var(--brass);text-transform:uppercase;
   }
-
-  .drop-grid{display:grid;grid-template-columns:1fr;gap:20px;}
 
   .dropzone{
-    border:1.5px dashed var(--line);
-    border-radius:2px;
-    padding:26px 18px;
-    text-align:center;
-    cursor:pointer;
-    transition:border-color .15s ease, background .15s ease;
-    background:var(--paper);
+    border:1.5px dashed var(--line);border-radius:2px;padding:26px 18px;text-align:center;cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;background:var(--paper);
   }
-  .dropzone:hover, .dropzone.drag{
-    border-color:var(--brass);
-    background:rgba(156,122,50,0.06);
-  }
+  .dropzone:hover, .dropzone.drag{border-color:var(--brass);background:rgba(156,122,50,0.06);}
   .dropzone:focus-within{outline:2px solid var(--focus); outline-offset:2px;}
-  .dropzone h3{
-    margin:0 0 6px;
-    font-family:'Fraunces',serif;
-    font-size:17px;
-  }
+  .dropzone h3{margin:0 0 6px;font-family:'Fraunces',serif;font-size:17px;}
   .dropzone p{margin:0;font-size:13px;color:var(--ink-soft);}
   .dropzone input{display:none;}
 
-  .file-list{margin-top:14px;text-align:left;}
+  .turn-btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+  .turn-btn{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;padding:10px 18px;border:1px solid var(--line);
+    background:var(--paper-raised);border-radius:2px;cursor:pointer;color:var(--ink-soft);position:relative;
+  }
+  .turn-btn.active{border-color:var(--brass);color:var(--ink);background:rgba(156,122,50,0.08);font-weight:600;}
+  .turn-btn.add{color:var(--brass);border-style:dashed;}
+  .turn-btn .dot{
+    display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--stamp-green);margin-left:6px;
+  }
+
   .file-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
-    padding:7px 0;
-    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;
+    padding:10px 0;border-bottom:1px solid var(--line);
   }
   .file-row .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);}
   .file-row .meta{color:var(--ink-soft);}
-  .file-row select{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    border:1px solid var(--line);
-    background:var(--paper-raised);
-    padding:3px 6px;
-    border-radius:2px;
-  }
   .file-row .err{color:var(--stamp-red);}
-  .file-row .rm{
-    background:none;border:none;cursor:pointer;color:var(--ink-soft);
-    font-size:15px;line-height:1;padding:2px 6px;
-  }
+  .file-row .rm{background:none;border:none;cursor:pointer;color:var(--ink-soft);font-size:15px;line-height:1;padding:2px 6px;}
   .file-row .rm:hover{color:var(--stamp-red);}
 
-  .count-cta{
+  .cta-row{
     display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;
-    border:1px solid var(--brass-light);background:rgba(156,122,50,0.06);
-    border-radius:2px;padding:18px 20px;margin-top:20px;
+    border:1px solid var(--brass-light);background:rgba(156,122,50,0.06);border-radius:2px;padding:18px 20px;margin-top:16px;
   }
-  .count-cta h3{margin:0 0 4px;font-family:'Fraunces',serif;font-size:17px;}
-  .count-cta p{margin:0;font-size:13px;color:var(--ink-soft);}
+  .cta-row h3{margin:0 0 4px;font-family:'Fraunces',serif;font-size:17px;}
+  .cta-row p{margin:0;font-size:13px;color:var(--ink-soft);}
 
-  .controls-row{
-    display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;
-    margin-top:18px;padding-top:18px;border-top:1px solid var(--line);
-  }
-  .field label{
-    display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;
-    color:var(--ink-soft);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;
-  }
-  .field input{
-    font-family:'IBM Plex Mono',monospace;
-    border:1px solid var(--line);
-    background:var(--paper);
-    padding:8px 10px;
-    width:110px;
-    border-radius:2px;
-    font-size:13px;
-  }
+  .controls-row{display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:1px solid var(--line);}
+  .field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-soft);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;}
+  .field input{font-family:'IBM Plex Mono',monospace;border:1px solid var(--line);background:var(--paper);padding:8px 10px;width:110px;border-radius:2px;font-size:13px;}
   .field input:focus{outline:2px solid var(--focus);outline-offset:1px;}
 
   button.primary, button.secondary{
-    background:var(--ink);
-    color:var(--paper);
-    border:none;
-    padding:13px 26px;
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:16px;
-    border-radius:2px;
-    cursor:pointer;
-    transition:background .15s ease;
+    background:var(--ink);color:var(--paper);border:none;padding:13px 26px;font-family:'Fraunces',serif;
+    font-weight:600;font-size:16px;border-radius:2px;cursor:pointer;transition:background .15s ease;
   }
   button.primary{margin-left:auto;}
   button.secondary{background:var(--brass);}
@@ -187,43 +88,16 @@
   button.primary:disabled{opacity:0.4;cursor:not-allowed;}
   button.primary:focus-visible, button.secondary:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
 
-  #status{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
-    color:var(--ink-soft);
-    margin-top:10px;
-    min-height:16px;
-  }
+  #status{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-top:10px;min-height:16px;}
 
   #results{display:none;}
-  .turn-block{
-    background:var(--paper-raised);
-    border:1px solid var(--line);
-    margin-bottom:22px;
-    position:relative;
-    overflow:hidden;
-  }
-  .turn-head{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:16px 22px;border-bottom:2px solid var(--brass-light);
-    flex-wrap:wrap;gap:8px;
-  }
-  .turn-head h2{
-    font-family:'Fraunces',serif;font-size:20px;margin:0;
-  }
-  .turn-head .device{
-    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);
-  }
+  .turn-block{background:var(--paper-raised);border:1px solid var(--line);margin-bottom:22px;position:relative;overflow:hidden;}
+  .turn-head{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:2px solid var(--brass-light);flex-wrap:wrap;gap:8px;}
+  .turn-head h2{font-family:'Fraunces',serif;font-size:20px;margin:0;}
+  .turn-head .device{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
   .stamp{
-    font-family:'IBM Plex Mono',monospace;
-    font-weight:600;
-    font-size:12px;
-    letter-spacing:0.06em;
-    padding:5px 12px;
-    border:2px solid currentColor;
-    border-radius:3px;
-    transform:rotate(-3deg);
-    text-transform:uppercase;
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12px;letter-spacing:0.06em;padding:5px 12px;
+    border:2px solid currentColor;border-radius:3px;transform:rotate(-3deg);text-transform:uppercase;
   }
   .stamp.ok{color:var(--stamp-green);background:var(--stamp-green-bg);}
   .stamp.bad{color:var(--stamp-red);background:var(--stamp-red-bg);}
@@ -232,108 +106,77 @@
   .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
   .table-scroll::-webkit-scrollbar{height:8px;}
   .table-scroll::-webkit-scrollbar-thumb{background:var(--brass-light);border-radius:4px;}
-  table.ledger th{
-    text-align:right;padding:9px 14px;font-size:10.5px;text-transform:uppercase;
-    letter-spacing:0.06em;color:var(--ink-soft);border-bottom:1px solid var(--line);
-    font-weight:500;
-  }
+  table.ledger th{text-align:right;padding:9px 14px;font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-soft);border-bottom:1px solid var(--line);font-weight:500;}
   table.ledger th:first-child, table.ledger td:first-child{text-align:left;}
   table.ledger td{padding:9px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
   table.ledger tbody tr:last-child td{border-bottom:none;}
   table.ledger tr.flagged td{background:var(--stamp-red-bg);}
-  table.ledger tr.flagged td:first-child{
-    box-shadow:inset 3px 0 0 var(--stamp-red);
-  }
+  table.ledger tr.flagged td:first-child{box-shadow:inset 3px 0 0 var(--stamp-red);}
   .cur{font-weight:600;}
+  td.needs-input{color:var(--stamp-red);font-style:italic;font-size:11.5px;}
+  td.auto-val{color:var(--ink-soft);}
+  td.auto-val::after{content:' 🔗';font-size:10px;}
 
   .sistemi-input, .op-input{
-    width:100px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
-    text-align:right;
-    background:transparent;
-    border:1px solid var(--line);
-    border-radius:2px;
-    padding:5px 7px;
-    color:var(--ink);
+    width:100px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-align:right;background:transparent;
+    border:1px solid var(--line);border-radius:2px;padding:5px 7px;color:var(--ink);
   }
-  .sistemi-input::placeholder, .op-input::placeholder{color:#b9b0a0;font-size:11px;}
-  .sistemi-input:focus, .op-input:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--focus);}
+  .sistemi-input::placeholder{color:#b9b0a0;font-size:11px;}
+  .sistemi-input:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--focus);}
   .diff-cell.cell-alert{color:var(--stamp-red);font-weight:600;}
-  td.needs-count{color:var(--stamp-red);font-style:italic;font-size:11.5px;}
 
   .warnings{padding:16px 22px;border-top:1px solid var(--line);background:rgba(168,56,44,0.03);}
-  .warnings h4{
-    margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:11px;
-    text-transform:uppercase;letter-spacing:0.08em;color:var(--stamp-red);
-  }
+  .warnings h4{margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--stamp-red);}
   .warnings ul{margin:0;padding-left:18px;font-size:13px;}
   .warnings li{margin-bottom:4px;}
+  .empty-note{text-align:center;color:var(--ink-soft);font-size:13px;padding:20px;font-family:'IBM Plex Mono',monospace;}
+  footer.legend{margin-top:30px;font-size:12px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:14px;}
 
-  .empty-note{
-    text-align:center;color:var(--ink-soft);font-size:13px;padding:20px;
-    font-family:'IBM Plex Mono',monospace;
-  }
-
-  footer.legend{
-    margin-top:30px;font-size:12px;color:var(--ink-soft);
-    border-top:1px solid var(--line);padding-top:14px;
-  }
-
-  /* ---- Screen 2: Numërimi Fizik i Arkës ---- */
-  #screen-count{display:none;}
+  /* ---- Sub-navigation screens shared styles ---- */
+  #screen-count, #screen-celje, #screen-movements, #screen-gjendje{display:none;}
   .turn-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;align-items:center;}
   .turn-tab{
-    font-family:'IBM Plex Mono',monospace;font-size:13px;
-    padding:9px 18px;border:1px solid var(--line);background:var(--paper-raised);
-    border-radius:2px;cursor:pointer;color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;font-size:13px;padding:9px 18px;border:1px solid var(--line);
+    background:var(--paper-raised);border-radius:2px;cursor:pointer;color:var(--ink-soft);
   }
   .turn-tab.active{border-color:var(--brass);color:var(--ink);background:rgba(156,122,50,0.08);font-weight:600;}
   .turn-tab.add{color:var(--brass);border-style:dashed;}
 
+  .subtab-row{display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--line);}
+  .subtab-btn{
+    font-family:'Fraunces',serif;font-size:16px;padding:12px 24px;border:none;background:none;cursor:pointer;
+    color:var(--ink-soft);border-bottom:3px solid transparent;margin-bottom:-2px;
+  }
+  .subtab-btn.active{color:var(--ink);border-bottom-color:var(--brass);font-weight:600;}
+
   .currency-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
-  .currency-panel{
-    background:var(--paper-raised);border:1px solid var(--line);border-radius:2px;
-    padding:16px;
-  }
-  .currency-panel h4{
-    margin:0 0 10px;font-family:'Fraunces',serif;font-size:16px;
-    border-bottom:1px solid var(--line);padding-bottom:8px;
-    display:flex;justify-content:space-between;align-items:center;
-  }
+  .currency-panel{background:var(--paper-raised);border:1px solid var(--line);border-radius:2px;padding:16px;}
+  .currency-panel h4{margin:0 0 10px;font-family:'Fraunces',serif;font-size:16px;border-bottom:1px solid var(--line);padding-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
   .denom-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-  .denom-label{
-    flex:1;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);
-  }
-  .denom-cope{
-    width:56px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-align:right;
-    border:1px solid var(--line);border-radius:2px;padding:4px 6px;background:var(--paper);
-  }
+  .denom-label{flex:1;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+  .denom-cope{width:56px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-align:right;border:1px solid var(--line);border-radius:2px;padding:4px 6px;background:var(--paper);}
   .denom-cope:focus{outline:2px solid var(--focus);outline-offset:1px;}
-  .denom-vlera{
-    width:82px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);
-  }
-  .panel-total{
-    margin-top:10px;padding-top:10px;border-top:2px solid var(--brass-light);
-    display:flex;justify-content:space-between;font-weight:600;font-family:'IBM Plex Mono',monospace;
-  }
-  .extra-panel input.cur-code{
-    width:70px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-transform:uppercase;
-    border:1px solid var(--line);border-radius:2px;padding:4px 6px;background:var(--paper);
-  }
-  .extra-panel .add-row-btn{
-    margin-top:8px;background:none;border:1px dashed var(--brass-light);color:var(--brass);
-    font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:5px 10px;border-radius:2px;cursor:pointer;width:100%;
-  }
+  .denom-vlera{width:82px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);}
+  .panel-total{margin-top:10px;padding-top:10px;border-top:2px solid var(--brass-light);display:flex;justify-content:space-between;font-weight:600;font-family:'IBM Plex Mono',monospace;}
+  .extra-panel input.cur-code{width:70px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-transform:uppercase;border:1px solid var(--line);border-radius:2px;padding:4px 6px;background:var(--paper);}
+  .extra-panel .add-row-btn{margin-top:8px;background:none;border:1px dashed var(--brass-light);color:var(--brass);font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:5px 10px;border-radius:2px;cursor:pointer;width:100%;}
   .extra-panel .denom-rm{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:13px;padding:0 4px;}
   .extra-panel .denom-rm:hover{color:var(--stamp-red);}
+
+  .move-table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  .move-table th{text-align:right;padding:9px 12px;font-size:10.5px;text-transform:uppercase;color:var(--ink-soft);border-bottom:1px solid var(--line);}
+  .move-table th:first-child, .move-table td:first-child{text-align:left;}
+  .move-table td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--line);}
+  .move-table input{width:110px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-align:right;border:1px solid var(--line);border-radius:2px;padding:5px 7px;background:var(--paper);}
+  .move-table input:focus{outline:2px solid var(--focus);outline-offset:1px;}
+  .add-cur-row{display:flex;gap:8px;margin-top:14px;align-items:center;}
+  .add-cur-row input{width:90px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;border:1px solid var(--line);border-radius:2px;padding:7px 9px;background:var(--paper);}
 </style>
 </head>
 <body>
 
 <!-- ============ SCREEN 1: RAKORDIMI ============ -->
 <div class="wrap" id="screen-recon">
-
   <header class="masthead">
     <div>
       <div class="kicker">Kontroll i Brendshëm · Zyrë Këmbimi Valutor</div>
@@ -346,33 +189,30 @@
     </div>
   </header>
 
-  <section class="panel" data-step="Hapi 1 — Ngarko Bilancet">
-    <div class="drop-grid">
-      <div id="dzBilanci" class="dropzone" tabindex="0">
-        <h3>Bilancet e Këmbimeve</h3>
-        <p>Një skedar për çdo turn / pajisje fiskale. Kliko ose zvarrit këtu (mund të ngarkosh disa njëherësh).</p>
-        <input id="inpBilanci" type="file" accept=".xlsx" multiple>
-        <div class="file-list" id="listBilanci"></div>
-      </div>
-    </div>
+  <section class="panel" data-step="Hapi 1 — Bilanci i Këmbimeve">
+    <div class="turn-btn-row" id="bilanciTurnBtns"></div>
+    <div id="bilanciUploadZone"></div>
 
-    <div class="count-cta">
-      <div>
-        <h3>Numërimi Fizik i Arkës</h3>
-        <p>Numëro kartëmonedhat/monedhat për çdo turn — zëvendëson skedarin "Gjendje Arke".</p>
-      </div>
+    <div class="cta-row">
+      <div><h3>Çelje Arke dhe Shtesa</h3><p>Numëro fizikisht çeljen e arkës dhe fondet e shtuara — për çdo turn.</p></div>
+      <button class="secondary" id="btnGoCelje" type="button">Çelje Arke dhe Shtesa →</button>
+    </div>
+    <div class="cta-row">
+      <div><h3>Tërheqje / Pagesa &amp; Dërgesa / Sigurime</h3><p>Regjistro lëvizjet UFT dhe siguracionet për çdo turn.</p></div>
+      <button class="secondary" id="btnGoMovements" type="button">Regjistro Lëvizjet →</button>
+    </div>
+    <div class="cta-row">
+      <div><h3>Gjendje sipas Sistemit</h3><p>Regjistro gjendjen që raporton sistemi — për çdo turn.</p></div>
+      <button class="secondary" id="btnGoGjendje" type="button">Gjendje sipas Sistemit →</button>
+    </div>
+    <div class="cta-row">
+      <div><h3>Numërimi Fizik i Arkës</h3><p>Numëro kartëmonedhat/monedhat për çdo turn — jep Mbylljen Faktike.</p></div>
       <button class="secondary" id="btnGoCount" type="button">Numërim Fizik →</button>
     </div>
 
     <div class="controls-row">
-      <div class="field">
-        <label for="tolAll">Tolerancë ALL</label>
-        <input id="tolAll" type="number" value="5" step="0.5" min="0">
-      </div>
-      <div class="field">
-        <label for="tolFx">Tolerancë valutë</label>
-        <input id="tolFx" type="number" value="0.5" step="0.1" min="0">
-      </div>
+      <div class="field"><label for="tolAll">Tolerancë ALL</label><input id="tolAll" type="number" value="5" step="0.5" min="0"></div>
+      <div class="field"><label for="tolFx">Tolerancë valutë</label><input id="tolFx" type="number" value="0.5" step="0.1" min="0"></div>
       <button class="primary" id="btnRun" disabled>Rakordo →</button>
     </div>
     <div id="status">Ngarko së paku një bilanc turni.</div>
@@ -384,78 +224,121 @@
   <div id="results"></div>
 
   <footer class="legend">
-    Rreshtat me shirit të kuq në të majtë tejkalojnë tolerancën e vendosur. "Rezultati i rikalkuluar" = Çelje Arke +
-    Blerje + Shitje (nga bilanci) − UFT Tërheqje + UFT Pagesa dhe Dërgesa + Sigupas-sig TPL. "Mbyllje Faktike" vjen nga
-    faqja e Numërimit Fizik. Të gjitha llogaritjet kryhen lokalisht në shfletues — asnjë skedar nuk ngarkohet në internet.
-    Të dhënat e futura manualisht (Çelje Arke, UFT, Sigupas, Gjendje sipas Sistemit, numërimi fizik) ruhen automatikisht
-    në këtë kompjuter dhe rikthehen edhe pas rifreskimit të faqes — deri në fund të ditës.
-    <button id="btnClearSaved" type="button" style="margin-left:8px;background:none;border:none;color:var(--stamp-red);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:inherit;">Pastro të dhënat e sotme</button>
+    Rreshtat me shirit të kuq tejkalojnë tolerancën. "Rezultati" = Çelje Arke + Shtesa/Pakësime + Blerje + Shitje
+    (bilanc) − UFT Tërheqje + UFT Pagesa dhe Dërgesa + Sigurime. Fushat me 🔗 vijnë automatikisht nga faqet
+    përkatëse (Çelje Arke dhe Shtesa / Tërheqje-Pagesa-Sigurime / Numërim Fizik) — nuk plotësohen më manualisht këtu.
+    Të gjitha llogaritjet kryhen lokalisht — asnjë skedar nuk ngarkohet në internet.
   </footer>
 </div>
 
 <!-- ============ SCREEN 2: NUMËRIMI FIZIK I ARKËS ============ -->
 <div class="wrap" id="screen-count">
   <header class="masthead">
-    <div>
-      <div class="kicker">Kontroll i Brendshëm · Zyrë Këmbimi Valutor</div>
-      <h1>Numërimi Fizik i Arkës</h1>
-    </div>
-    <button class="back-btn" id="btnGoRecon" type="button">← Kthehu te Rakordimi</button>
+    <div><div class="kicker">Kontroll i Brendshëm</div><h1>Numërimi Fizik i Arkës</h1></div>
+    <button class="back-btn" id="btnBackFromCount" type="button">← Kthehu te Rakordimi</button>
   </header>
-
-  <div class="turn-tabs" id="turnTabs"></div>
-  <div id="currencyGrids"></div>
-
-  <div class="controls-row" style="justify-content:flex-end;border-top:none;margin-top:10px;">
+  <div class="turn-tabs" id="countTurnTabs"></div>
+  <div id="countGrids"></div>
+  <div class="controls-row" style="justify-content:flex-end;border-top:none;margin-top:10px;gap:12px;">
+    <button class="secondary" id="btnExportCount" type="button">⬇ Shkarko Excel</button>
     <button class="primary" id="btnSaveCount" type="button">💾 Ruaj dhe kthehu te Rakordimi</button>
   </div>
 </div>
 
+<!-- ============ SCREEN 3: ÇELJE ARKE DHE SHTESA ============ -->
+<div class="wrap" id="screen-celje">
+  <header class="masthead">
+    <div><div class="kicker">Kontroll i Brendshëm</div><h1>Çelje Arke dhe Shtesa</h1></div>
+    <button class="back-btn" id="btnBackFromCelje" type="button">← Kthehu te Rakordimi</button>
+  </header>
+  <div class="subtab-row">
+    <button type="button" class="subtab-btn active" id="subtabCelje" data-sub="celje">a. Çelje Arke</button>
+    <button type="button" class="subtab-btn" id="subtabShtesa" data-sub="shtesa">b. Shtesa</button>
+  </div>
+  <div class="turn-tabs" id="celjeTurnTabs"></div>
+  <div id="celjeGrids"></div>
+  <div class="controls-row" style="justify-content:flex-end;border-top:none;margin-top:10px;gap:12px;">
+    <button class="secondary" id="btnExportCelje" type="button">⬇ Shkarko Excel</button>
+    <button class="primary" id="btnSaveCelje" type="button">💾 Ruaj dhe kthehu te Rakordimi</button>
+  </div>
+</div>
+
+<!-- ============ SCREEN 4: TËRHEQJE/PAGESA & DËRGESA/SIGURIME ============ -->
+<div class="wrap" id="screen-movements">
+  <header class="masthead">
+    <div><div class="kicker">Kontroll i Brendshëm</div><h1>Tërheqje / Pagesa &amp; Dërgesa / Sigurime</h1></div>
+    <button class="back-btn" id="btnBackFromMovements" type="button">← Kthehu te Rakordimi</button>
+  </header>
+  <div class="turn-tabs" id="moveTurnTabs"></div>
+  <div id="moveTableHost"></div>
+  <div class="controls-row" style="justify-content:flex-end;border-top:none;margin-top:10px;gap:12px;">
+    <button class="secondary" id="btnExportMovements" type="button">⬇ Shkarko Excel</button>
+    <button class="primary" id="btnSaveMovements" type="button">💾 Ruaj dhe kthehu te Rakordimi</button>
+  </div>
+</div>
+
+<!-- ============ SCREEN 5: GJENDJE SIPAS SISTEMIT ============ -->
+<div class="wrap" id="screen-gjendje">
+  <header class="masthead">
+    <div><div class="kicker">Kontroll i Brendshëm</div><h1>Gjendje sipas Sistemit</h1></div>
+    <button class="back-btn" id="btnBackFromGjendje" type="button">← Kthehu te Rakordimi</button>
+  </header>
+  <div class="turn-tabs" id="gjendjeTurnTabs"></div>
+  <div id="gjendjeGrids"></div>
+  <div class="controls-row" style="justify-content:flex-end;border-top:none;margin-top:10px;gap:12px;">
+    <button class="secondary" id="btnExportGjendje" type="button">⬇ Shkarko Excel</button>
+    <button class="primary" id="btnSaveGjendje" type="button">💾 Ruaj dhe kthehu te Rakordimi</button>
+  </div>
+</div>
+
 <script>
-// ---------- Kontroll hyrjeje (front-end, jo siguri e vërtetë) ----------
+// ---------- Kontroll hyrjeje ----------
 let CURRENT_SESSION = null;
 (function authGuard(){
   try { CURRENT_SESSION = JSON.parse(sessionStorage.getItem('raa_session') || 'null'); } catch(e){}
-  if (!CURRENT_SESSION || !CURRENT_SESSION.authed) {
-    window.location.href = 'index.html';
-    return;
-  }
+  if (!CURRENT_SESSION || !CURRENT_SESSION.authed) { window.location.href = 'index.html'; return; }
   window.addEventListener('DOMContentLoaded', () => {
     const lbl = document.getElementById('operatorLabel');
     if (lbl) lbl.textContent = `Operator: ${CURRENT_SESSION.name || CURRENT_SESSION.user}`;
   });
 })();
-
 document.getElementById('todayLabel') && (document.getElementById('todayLabel').textContent = new Date().toLocaleDateString('sq-AL', {year:'numeric', month:'long', day:'numeric'}));
 document.getElementById('btnLogout') && document.getElementById('btnLogout').addEventListener('click', () => {
   try { sessionStorage.removeItem('raa_session'); } catch(e){}
   window.location.href = 'index.html';
 });
-document.getElementById('btnClearSaved') && document.getElementById('btnClearSaved').addEventListener('click', () => {
-  if (!confirm('Të fshihen të gjitha të dhënat e futura manualisht sot (Çelje Arke, UFT, Sigupas, numërimi fizik)? Ky veprim s\'kthehet mbrapsht.')) return;
-  try {
-    localStorage.removeItem(CASHCOUNT_KEY);
-    localStorage.removeItem(MANUAL_KEY);
-  } catch(e){}
-  window.location.reload();
-});
-
-const BILANCI_STATE = [];  // {file, name, meta, rows, turn, error}
 
 const fmt = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '—' :
   Number(v).toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
-
 function num(v){ return (v === null || v === undefined || v === '') ? 0 : Number(v); }
+function todayKey(){ return new Date().toISOString().slice(0,10); }
 
-// ---------- Parsing (Bilanci i Këmbimeve) ----------
+// ==================================================================
+// TURNET (të përbashkëta për të gjitha faqet)
+// ==================================================================
+let TURNS = ['Turni 1', 'Turni 2'];
+(function loadTurns(){
+  try {
+    const raw = localStorage.getItem(`raa_turns_${todayKey()}`);
+    if (raw) TURNS = JSON.parse(raw);
+  } catch(e){}
+})();
+function persistTurns(){ try { localStorage.setItem(`raa_turns_${todayKey()}`, JSON.stringify(TURNS)); } catch(e){} }
+function addTurn(){
+  const n = TURNS.length + 1;
+  const label = `Turni ${n}`;
+  TURNS.push(label);
+  persistTurns();
+  return label;
+}
+
+// ==================================================================
+// PARSIMI I BILANCIT (i pandryshuar)
+// ==================================================================
 function parseBilanciWorkbook(wb){
   const ws = wb.Sheets[wb.SheetNames[0]];
   const raw = XLSX.utils.sheet_to_json(ws, {header:1, defval: null});
-  const meta = {
-    pajisje: raw[3] ? raw[3][1] : null,
-    nga: raw[5] ? raw[5][1] : null,
-    ne: raw[6] ? raw[6][1] : null,
-  };
+  const meta = { pajisje: raw[3] ? raw[3][1] : null, nga: raw[5] ? raw[5][1] : null, ne: raw[6] ? raw[6][1] : null };
   const rows = [];
   for (let i = 11; i < raw.length; i++) {
     const r = raw[i];
@@ -463,8 +346,7 @@ function parseBilanciWorkbook(wb){
     const numri = r[1];
     if (typeof numri !== 'number') continue;
     rows.push({
-      Numri: numri, Veprimi: r[2],
-      F_Monedha: r[3], F_Kursi: r[5],
+      Numri: numri, Veprimi: r[2], F_Monedha: r[3], F_Kursi: r[5],
       A_Monedha: r[9], A_Shuma: num(r[10]), A_VleraALL: num(r[12]),
       P_Monedha: r[14], P_Shuma: num(r[15]), P_VleraALL: num(r[17]),
     });
@@ -500,9 +382,7 @@ function checkInvoiceSequence(rows){
   const unique = [...new Set(numra)].sort((a,b)=>a-b);
   const gaps = [];
   for (let i=0;i<unique.length-1;i++){
-    if (unique[i+1] - unique[i] > 1){
-      for (let g = unique[i]+1; g < unique[i+1]; g++) gaps.push(g);
-    }
+    if (unique[i+1] - unique[i] > 1){ for (let g = unique[i]+1; g < unique[i+1]; g++) gaps.push(g); }
   }
   return {gaps, dup};
 }
@@ -530,98 +410,107 @@ function checkKursOutliers(rows, zThresh=2.5){
   return flagged;
 }
 
-// ---------- UI: Bilanci dropzone ----------
-const dzBilanci = document.getElementById('dzBilanci');
-const inpBilanci = document.getElementById('inpBilanci');
-const listBilanci = document.getElementById('listBilanci');
+// ==================================================================
+// BILANCI I KËMBIMEVE — butona turni + upload specifik per turn
+// ==================================================================
+const BILANCI_BY_TURN = {}; // { 'Turni 1': {file,name,meta,rows,error} }
+let ACTIVE_BILANCI_TURN = TURNS[0];
 
-dzBilanci.addEventListener('click', () => inpBilanci.click());
-dzBilanci.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') inpBilanci.click(); });
-['dragover','dragenter'].forEach(ev => dzBilanci.addEventListener(ev, e => { e.preventDefault(); dzBilanci.classList.add('drag'); }));
-['dragleave','drop'].forEach(ev => dzBilanci.addEventListener(ev, e => { e.preventDefault(); dzBilanci.classList.remove('drag'); }));
-dzBilanci.addEventListener('drop', e => handleBilanciFiles(e.dataTransfer.files));
-inpBilanci.addEventListener('change', e => handleBilanciFiles(e.target.files));
-inpBilanci.addEventListener('click', e => e.stopPropagation());
-
-function handleBilanciFiles(fileList){
-  [...fileList].forEach(file => {
-    const entry = { file, name: file.name, meta:null, rows:null, turn: BILANCI_STATE.length+1, error:null };
-    BILANCI_STATE.push(entry);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try{
-        const wb = XLSX.read(e.target.result, {type:'array'});
-        const {meta, rows} = parseBilanciWorkbook(wb);
-        entry.meta = meta; entry.rows = rows;
-      } catch(err){
-        entry.error = err.message;
-      }
-      renderBilanciList();
-      updateRunState();
-    };
-    reader.readAsArrayBuffer(file);
-  });
-  renderBilanciList();
+function renderBilanciSection(){
+  renderBilanciTurnButtons();
+  renderBilanciUploadZone();
+  updateRunState();
 }
 
-function renderBilanciList(){
-  listBilanci.innerHTML = '';
-  BILANCI_STATE.forEach((entry, idx) => {
-    const row = document.createElement('div');
-    row.className = 'file-row';
+function renderBilanciTurnButtons(){
+  const host = document.getElementById('bilanciTurnBtns');
+  const rmBtn = (t) => isAdmin() && TURNS.length > 1 ? ` <span class="turn-rm" data-rm-turn="${t}" title="Fshi turnin" style="margin-left:6px;color:var(--stamp-red);cursor:pointer;">✕</span>` : '';
+  host.innerHTML = TURNS.map(t => {
+    const has = BILANCI_BY_TURN[t] && BILANCI_BY_TURN[t].rows;
+    return `<button type="button" class="turn-btn ${t===ACTIVE_BILANCI_TURN?'active':''}" data-turn="${t}">${t}${has?'<span class="dot"></span>':''}${rmBtn(t)}</button>`;
+  }).join('') + `<button type="button" class="turn-btn add" id="btnAddBilanciTurn">+ Shto Turn</button>`;
+
+  host.querySelectorAll('.turn-btn[data-turn]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      if (e.target.dataset && e.target.dataset.rmTurn) { removeTurn(e.target.dataset.rmTurn); renderBilanciSection(); return; }
+      ACTIVE_BILANCI_TURN = btn.dataset.turn; renderBilanciSection();
+    });
+  });
+  document.getElementById('btnAddBilanciTurn').addEventListener('click', () => {
+    ACTIVE_BILANCI_TURN = addTurn();
+    renderBilanciSection();
+  });
+}
+
+function renderBilanciUploadZone(){
+  const zone = document.getElementById('bilanciUploadZone');
+  const entry = BILANCI_BY_TURN[ACTIVE_BILANCI_TURN];
+  zone.innerHTML = `
+    <div id="dzBilanci" class="dropzone" tabindex="0">
+      <h3>Bilanci i Këmbimeve — ${ACTIVE_BILANCI_TURN}</h3>
+      <p>Kliko ose zvarrit skedarin .xlsx për këtë turn.</p>
+      <input id="inpBilanci" type="file" accept=".xlsx">
+      <div class="file-list" id="listBilanci"></div>
+    </div>`;
+  const dz = document.getElementById('dzBilanci');
+  const inp = document.getElementById('inpBilanci');
+  dz.addEventListener('click', () => inp.click());
+  dz.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') inp.click(); });
+  ['dragover','dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+  dz.addEventListener('drop', e => handleBilanciFile(e.dataTransfer.files[0]));
+  inp.addEventListener('change', e => handleBilanciFile(e.target.files[0]));
+  inp.addEventListener('click', e => e.stopPropagation());
+
+  const list = document.getElementById('listBilanci');
+  if (entry) {
     const label = entry.error ? `<span class="err">${entry.error}</span>` :
       (entry.meta ? `<span class="meta">pajisje ${entry.meta.pajisje} · ${entry.meta.nga}</span>` : `<span class="meta">duke lexuar…</span>`);
-    row.innerHTML = `
-      <span class="name">${entry.name}</span>
-      ${label}
-      <select data-idx="${idx}" aria-label="Cakto turnin">
-        ${[1,2,3,4].map(n=>`<option value="${n}" ${entry.turn===n?'selected':''}>Turni ${n}</option>`).join('')}
-      </select>
-      <button class="rm" data-rm="${idx}" aria-label="Hiq skedarin">✕</button>`;
-    listBilanci.appendChild(row);
-  });
-  listBilanci.querySelectorAll('select').forEach(sel => {
-    sel.addEventListener('change', e => {
-      BILANCI_STATE[+e.target.dataset.idx].turn = +e.target.value;
+    list.innerHTML = `<div class="file-row"><span class="name">${entry.name}</span>${label}
+      <button class="rm" id="rmBilanciFile" aria-label="Hiq skedarin">✕</button></div>`;
+    document.getElementById('rmBilanciFile').addEventListener('click', () => {
+      delete BILANCI_BY_TURN[ACTIVE_BILANCI_TURN];
+      renderBilanciSection();
     });
-  });
-  listBilanci.querySelectorAll('[data-rm]').forEach(btn => {
-    btn.addEventListener('click', e => {
-      BILANCI_STATE.splice(+e.target.dataset.rm, 1);
-      renderBilanciList();
-      updateRunState();
-    });
-  });
+  }
 }
+
+function handleBilanciFile(file){
+  if (!file) return;
+  if (typeof XLSX === 'undefined') {
+    BILANCI_BY_TURN[ACTIVE_BILANCI_TURN] = { file, name: file.name, meta:null, rows:null,
+      error: 'Libraria XLSX nuk u ngarkua — duhet lidhje interneti herën e parë që hapet faqja.' };
+    renderBilanciSection();
+    return;
+  }
+  const entry = { file, name: file.name, meta:null, rows:null, error:null };
+  BILANCI_BY_TURN[ACTIVE_BILANCI_TURN] = entry;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try{
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const {meta, rows} = parseBilanciWorkbook(wb);
+      entry.meta = meta; entry.rows = rows;
+    } catch(err){ entry.error = err.message; }
+    renderBilanciSection();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// Parandalon hapjen e skedarit në shfletues nëse zvarritet jashtë kutisë së ngarkimit
+window.addEventListener('dragover', e => e.preventDefault());
+window.addEventListener('drop', e => e.preventDefault());
 
 function updateRunState(){
-  const ready = BILANCI_STATE.some(b=>b.rows);
+  const ready = Object.values(BILANCI_BY_TURN).some(b => b.rows);
   document.getElementById('btnRun').disabled = !ready;
   const status = document.getElementById('status');
-  status.textContent = ready
-    ? `Gati: ${BILANCI_STATE.filter(b=>b.rows).length} bilanc(e) turni. Kliko "Rakordo" për të vazhduar.`
-    : 'Ngarko së paku një bilanc turni.';
+  const n = Object.values(BILANCI_BY_TURN).filter(b=>b.rows).length;
+  status.textContent = ready ? `Gati: ${n} bilanc(e) turni. Kliko "Rakordo" për të vazhduar.` : 'Ngarko së paku një bilanc turni.';
 }
 
 // ==================================================================
-// SCREEN NAVIGATION
-// ==================================================================
-document.getElementById('btnGoCount').addEventListener('click', () => showScreen('count'));
-document.getElementById('btnGoRecon').addEventListener('click', () => showScreen('recon'));
-document.getElementById('btnSaveCount').addEventListener('click', () => {
-  showScreen('recon');
-  if (document.getElementById('results').style.display === 'block') runReconciliation();
-});
-
-function showScreen(name){
-  document.getElementById('screen-recon').style.display = name === 'recon' ? 'block' : 'none';
-  document.getElementById('screen-count').style.display = name === 'count' ? 'block' : 'none';
-  if (name === 'count') renderCountScreen();
-  window.scrollTo(0,0);
-}
-
-// ==================================================================
-// SCREEN 2: NUMËRIMI FIZIK I ARKËS (prerje kartëmonedhash/monedhash)
+// DENOMINACIONET (të përbashkëta për Numërim Fizik / Çelje Arke / Shtesa)
 // ==================================================================
 const DENOMINATIONS = {
   ALL: [10000,5000,2000,1000,500,200,100,50,20,10,5],
@@ -637,105 +526,74 @@ const DENOMINATIONS = {
   MKD: [2000,1000,500,200,100,50,10],
 };
 
-// ---------- Ruajtje automatike (localStorage, e ndarë sipas ditës) ----------
-function todayKey(){ return new Date().toISOString().slice(0,10); }
-function loadPersisted(key, fallback){
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
-}
-function savePersisted(key, value){
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch(e){}
-}
-const CASHCOUNT_KEY = 'raa_cashcount_' + todayKey();
-const MANUAL_KEY = 'raa_manual_' + todayKey();
+function makeCounter(persistKey){ return { data:{}, persistKey }; }
+const MBYLLJE_CNT = makeCounter('cashcount');   // Numërim Fizik -> Mbyllje Faktike
+const CELJE_CNT   = makeCounter('celjearke');   // Çelje Arke dhe Shtesa -> a. Çelje Arke
+const SHTESA_CNT  = makeCounter('shtesa');      // Çelje Arke dhe Shtesa -> b. Shtesa
 
-let COUNT_TURNS = ['Turni 1', 'Turni 2'];
-let ACTIVE_COUNT_TURN = 'Turni 1';
-const CASH_COUNT = {};
-const MANUAL_FIELDS = loadPersisted(MANUAL_KEY, {}); // { rowId: {arkaCelje,uftT,uftP,sig,sistemi} }
-
-(function restoreCashCount(){
-  const saved = loadPersisted(CASHCOUNT_KEY, null);
-  if (saved && saved.turns && saved.data) {
-    COUNT_TURNS = saved.turns;
-    Object.assign(CASH_COUNT, saved.data);
-    ACTIVE_COUNT_TURN = COUNT_TURNS[0];
-  }
+// Gjendje sipas Sistemit — vlera direkte per monedhë (sistemi s'i ka sipas prerjeve)
+const GJENDJE_SIST = {}; // { 'Turni 1': { currencies:[...], data:{ALL: 123.45} } }
+(function loadGjendjeSist(){
+  try { const raw = localStorage.getItem(`raa_gjendjesist_${todayKey()}`); if (raw) Object.assign(GJENDJE_SIST, JSON.parse(raw)); } catch(e){}
 })();
-
-function persistCashCount(){
-  savePersisted(CASHCOUNT_KEY, { turns: COUNT_TURNS, data: CASH_COUNT });
+function persistGjendjeSist(){ try { localStorage.setItem(`raa_gjendjesist_${todayKey()}`, JSON.stringify(GJENDJE_SIST)); } catch(e){} }
+function ensureGjendjeSistTurn(turn){
+  if (!GJENDJE_SIST[turn]) GJENDJE_SIST[turn] = { currencies:['ALL','EUR','USD','GBP'], data:{} };
+  if (!Array.isArray(GJENDJE_SIST[turn].currencies)) GJENDJE_SIST[turn].currencies = ['ALL','EUR','USD','GBP'];
+  if (!GJENDJE_SIST[turn].data) GJENDJE_SIST[turn].data = {};
 }
-function persistManualField(rowId, patch){
-  MANUAL_FIELDS[rowId] = Object.assign({}, MANUAL_FIELDS[rowId], patch);
-  savePersisted(MANUAL_KEY, MANUAL_FIELDS);
-}
-
-function ensureTurnCount(turn){
-  if (!CASH_COUNT[turn]) {
-    CASH_COUNT[turn] = {};
-    Object.keys(DENOMINATIONS).forEach(cur => {
-      CASH_COUNT[turn][cur] = { cope: {}, total: 0 };
-    });
-    CASH_COUNT[turn].EXTRAS = []; // { id, code, denoms:[], cope:{}, total }
-    CASH_COUNT[turn].nextExtraId = 1;
-  }
-  if (!CASH_COUNT[turn].EXTRAS) CASH_COUNT[turn].EXTRAS = [];
-  if (!CASH_COUNT[turn].nextExtraId) CASH_COUNT[turn].nextExtraId = 1;
+function getGjendjeSistemi(turn, currency){
+  const t = GJENDJE_SIST[turn];
+  if (!t || t.data[currency] === undefined || t.data[currency] === null || t.data[currency] === '') return null;
+  return Number(t.data[currency]);
 }
 
-function getExtra(turnData, id){
-  return turnData.EXTRAS.find(x => x.id === id);
-}
-
-function renderCountScreen(){
-  ensureTurnCount(ACTIVE_COUNT_TURN);
-  renderTurnTabs();
-  renderCurrencyGrids();
-}
-
-function renderTurnTabs(){
-  const tabs = document.getElementById('turnTabs');
-  tabs.innerHTML = COUNT_TURNS.map(t =>
-    `<button type="button" class="turn-tab ${t===ACTIVE_COUNT_TURN?'active':''}" data-turn="${t}">${t}</button>`
-  ).join('') + `<button type="button" class="turn-tab add" id="btnAddTurn">+ Shto Turn</button>`;
-
-  tabs.querySelectorAll('.turn-tab[data-turn]').forEach(btn => {
-    btn.addEventListener('click', () => { ACTIVE_COUNT_TURN = btn.dataset.turn; renderCountScreen(); });
+function ensureTurnCounter(cnt, turn){
+  if (!cnt.data[turn]) cnt.data[turn] = {};
+  const t = cnt.data[turn];
+  // Shëron edhe të dhëna të vjetra nga versione të mëparshme: siguron çdo monedhë + strukturën e brendshme
+  Object.keys(DENOMINATIONS).forEach(cur => {
+    if (!t[cur]) t[cur] = { cope:{}, total:0 };
+    if (!t[cur].cope) t[cur].cope = {};
+    if (typeof t[cur].total !== 'number') t[cur].total = 0;
   });
-  document.getElementById('btnAddTurn').addEventListener('click', () => {
-    const n = COUNT_TURNS.length + 1;
-    const label = `Turni ${n}`;
-    COUNT_TURNS.push(label);
-    ACTIVE_COUNT_TURN = label;
-    ensureTurnCount(label);
-    persistCashCount();
-    renderCountScreen();
+  if (!Array.isArray(t.EXTRAS)) t.EXTRAS = [];
+  t.EXTRAS.forEach(x => {
+    if (!x.cope) x.cope = {};
+    if (!Array.isArray(x.denoms)) x.denoms = [];
+    if (typeof x.total !== 'number') x.total = 0;
   });
+  if (!t.nextExtraId) t.nextExtraId = (t.EXTRAS.reduce((m,x)=>Math.max(m, x.id||0), 0)) + 1;
 }
-
-function denomLabel(cur, val){
-  return `${val.toLocaleString('de-DE')} ${cur}`;
+function getCounterExtra(turnData, id){ return turnData.EXTRAS.find(x => x.id === id); }
+function getCounterTotal(cnt, turn, currency){
+  const t = cnt.data[turn];
+  if (!t) return null;
+  if (t[currency]) return t[currency].total;
+  const extraMatch = (t.EXTRAS||[]).find(x => x.code === currency);
+  if (extraMatch) return extraMatch.total;
+  return null;
 }
+function persistCounter(cnt){ try { localStorage.setItem(`raa_${cnt.persistKey}_${todayKey()}`, JSON.stringify(cnt.data)); } catch(e){} }
+function loadCounter(cnt){
+  try { const raw = localStorage.getItem(`raa_${cnt.persistKey}_${todayKey()}`); if (raw) cnt.data = JSON.parse(raw); } catch(e){}
+}
+[MBYLLJE_CNT, CELJE_CNT, SHTESA_CNT].forEach(loadCounter);
 
-function renderCurrencyGrids(){
-  ensureTurnCount(ACTIVE_COUNT_TURN);
-  const grid = document.getElementById('currencyGrids');
-  const turnData = CASH_COUNT[ACTIVE_COUNT_TURN];
+function renderCounterGrid(cnt, gridEl, activeTurn){
+  ensureTurnCounter(cnt, activeTurn);
+  const turnData = cnt.data[activeTurn];
 
   const panels = Object.keys(DENOMINATIONS).map(cur => {
     const denoms = DENOMINATIONS[cur];
     const rows = denoms.map(val => `
       <div class="denom-row">
-        <span class="denom-label">${denomLabel(cur, val)}</span>
+        <span class="denom-label">${val.toLocaleString('de-DE')} ${cur}</span>
         <input type="number" min="0" step="1" class="denom-cope" data-cur="${cur}" data-val="${val}" placeholder="0">
         <span class="denom-vlera" data-vlera-for="${cur}:${val}">0,00</span>
       </div>`).join('');
-    return `
-      <div class="currency-panel" data-panel="${cur}">
-        <h4>${cur}</h4>
-        ${rows}
-        <div class="panel-total"><span>Totali</span><span data-total-for="${cur}">0,00 ${cur}</span></div>
-      </div>`;
+    return `<div class="currency-panel" data-panel="${cur}"><h4>${cur}</h4>${rows}
+      <div class="panel-total"><span>Totali</span><span data-total-for="${cur}">0,00 ${cur}</span></div></div>`;
   }).join('');
 
   const extraPanels = turnData.EXTRAS.map(extra => {
@@ -747,131 +605,400 @@ function renderCurrencyGrids(){
         <span class="denom-vlera" data-vlera-for="${key}:${val}">0,00</span>
         <button type="button" class="denom-rm" data-rm-extra="${extra.id}:${i}">✕</button>
       </div>`).join('');
-    return `
-      <div class="currency-panel extra-panel" data-panel="${key}">
-        <h4>
-          <input type="text" class="cur-code" data-extra-code="${extra.id}" placeholder="KOD" value="${extra.code||''}" maxlength="6">
-          <button type="button" class="denom-rm" data-rm-currency="${extra.id}" title="Hiq monedhën">✕</button>
-        </h4>
-        <div>${extraRows}</div>
-        <input type="number" class="denom-cope" data-new-denom="${extra.id}" placeholder="Vlerë e re" style="width:100%;margin-top:6px;">
-        <button type="button" class="add-row-btn" data-add-denom="${extra.id}">+ Shto Prerje</button>
-        <div class="panel-total"><span>Totali</span><span data-total-for="${key}">0,00 ${extra.code||''}</span></div>
-      </div>`;
+    return `<div class="currency-panel extra-panel" data-panel="${key}">
+      <h4><input type="text" class="cur-code" data-extra-code="${extra.id}" placeholder="KOD" value="${extra.code||''}" maxlength="6">
+      <button type="button" class="denom-rm" data-rm-currency="${extra.id}" title="Hiq monedhën">✕</button></h4>
+      <div>${extraRows}</div>
+      <input type="number" class="denom-cope" data-new-denom="${extra.id}" placeholder="Vlerë e re" style="width:100%;margin-top:6px;">
+      <button type="button" class="add-row-btn" data-add-denom="${extra.id}">+ Shto Prerje</button>
+      <div class="panel-total"><span>Totali</span><span data-total-for="${key}">0,00 ${extra.code||''}</span></div>
+    </div>`;
   }).join('');
 
-  const addCurrencyTile = `
-    <div class="currency-panel extra-panel" style="display:flex;align-items:center;justify-content:center;">
-      <button type="button" class="add-row-btn" id="btnAddCurrency" style="border:1px dashed var(--brass-light);">+ Shto Monedhë</button>
-    </div>`;
+  const addCurrencyTile = `<div class="currency-panel extra-panel" style="display:flex;align-items:center;justify-content:center;">
+    <button type="button" class="add-row-btn" data-add-currency style="border:1px dashed var(--brass-light);">+ Shto Monedhë</button></div>`;
 
-  grid.innerHTML = `<div class="currency-grid">${panels}${extraPanels}${addCurrencyTile}</div>`;
+  gridEl.innerHTML = `<div class="currency-grid">${panels}${extraPanels}${addCurrencyTile}</div>`;
 
-  grid.querySelectorAll('.denom-cope[data-cur]').forEach(inp => {
+  gridEl.querySelectorAll('.denom-cope[data-cur]').forEach(inp => {
     const cur = inp.dataset.cur, val = inp.dataset.val;
-    const dataObj = cur.startsWith('EXTRA_') ? getExtra(turnData, Number(cur.split('_')[1])) : turnData[cur];
+    const dataObj = cur.startsWith('EXTRA_') ? getCounterExtra(turnData, Number(cur.split('_')[1])) : turnData[cur];
     const saved = dataObj && dataObj.cope[val];
     if (saved) inp.value = saved;
-    inp.addEventListener('input', onDenomInput);
+    inp.addEventListener('input', (e) => onCounterDenomInput(cnt, activeTurn, e));
   });
 
-  grid.querySelectorAll('[data-extra-code]').forEach(inp => {
+  gridEl.querySelectorAll('[data-extra-code]').forEach(inp => {
     inp.addEventListener('input', e => {
-      const extra = getExtra(turnData, Number(e.target.dataset.extraCode));
+      const extra = getCounterExtra(turnData, Number(e.target.dataset.extraCode));
       extra.code = e.target.value.toUpperCase();
-      recomputePanel('EXTRA_' + extra.id);
-      persistCashCount();
+      recomputeCounterPanel(cnt, activeTurn, 'EXTRA_' + extra.id, gridEl);
+      persistCounter(cnt);
     });
   });
 
-  document.getElementById('btnAddCurrency').addEventListener('click', () => {
+  gridEl.querySelector('[data-add-currency]').addEventListener('click', () => {
     const id = turnData.nextExtraId++;
-    turnData.EXTRAS.push({ id, code: '', denoms: [], cope: {}, total: 0 });
-    persistCashCount();
-    renderCurrencyGrids();
+    turnData.EXTRAS.push({ id, code:'', denoms:[], cope:{}, total:0 });
+    persistCounter(cnt);
+    renderCounterGrid(cnt, gridEl, activeTurn);
   });
 
-  grid.querySelectorAll('[data-add-denom]').forEach(btn => {
+  gridEl.querySelectorAll('[data-add-denom]').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = Number(btn.dataset.addDenom);
-      const extra = getExtra(turnData, id);
-      const input = grid.querySelector(`[data-new-denom="${id}"]`);
+      const extra = getCounterExtra(turnData, id);
+      const input = gridEl.querySelector(`[data-new-denom="${id}"]`);
       const v = Number(input.value);
       if (!v || v <= 0) return;
-      extra.denoms.push(v);
-      extra.denoms.sort((a,b)=>b-a);
-      persistCashCount();
-      renderCurrencyGrids();
+      extra.denoms.push(v); extra.denoms.sort((a,b)=>b-a);
+      persistCounter(cnt);
+      renderCounterGrid(cnt, gridEl, activeTurn);
     });
   });
 
-  grid.querySelectorAll('[data-rm-extra]').forEach(btn => {
+  gridEl.querySelectorAll('[data-rm-extra]').forEach(btn => {
     btn.addEventListener('click', () => {
       const [idStr, iStr] = btn.dataset.rmExtra.split(':');
-      const extra = getExtra(turnData, Number(idStr));
+      const extra = getCounterExtra(turnData, Number(idStr));
       const removedVal = extra.denoms[Number(iStr)];
       delete extra.cope[removedVal];
       extra.denoms.splice(Number(iStr),1);
-      persistCashCount();
-      renderCurrencyGrids();
+      persistCounter(cnt);
+      renderCounterGrid(cnt, gridEl, activeTurn);
     });
   });
 
-  grid.querySelectorAll('[data-rm-currency]').forEach(btn => {
+  gridEl.querySelectorAll('[data-rm-currency]').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = Number(btn.dataset.rmCurrency);
       if (!confirm('Të hiqet kjo monedhë shtesë dhe të gjitha të dhënat e saj?')) return;
       turnData.EXTRAS = turnData.EXTRAS.filter(x => x.id !== id);
-      persistCashCount();
-      renderCurrencyGrids();
+      persistCounter(cnt);
+      renderCounterGrid(cnt, gridEl, activeTurn);
     });
   });
 
-  Object.keys(DENOMINATIONS).forEach(recomputePanel);
-  turnData.EXTRAS.forEach(extra => recomputePanel('EXTRA_' + extra.id));
+  Object.keys(DENOMINATIONS).forEach(cur => recomputeCounterPanel(cnt, activeTurn, cur, gridEl));
+  turnData.EXTRAS.forEach(extra => recomputeCounterPanel(cnt, activeTurn, 'EXTRA_' + extra.id, gridEl));
 }
 
-function onDenomInput(e){
+function onCounterDenomInput(cnt, activeTurn, e){
   const inp = e.target;
   let cope = Math.floor(Number(inp.value));
   if (!Number.isFinite(cope) || cope < 0) cope = 0;
   inp.value = cope === 0 && inp.value === '' ? '' : cope;
   const cur = inp.dataset.cur, val = inp.dataset.val;
-  const turnData = CASH_COUNT[ACTIVE_COUNT_TURN];
-  const dataObj = cur.startsWith('EXTRA_') ? getExtra(turnData, Number(cur.split('_')[1])) : turnData[cur];
+  const turnData = cnt.data[activeTurn];
+  const dataObj = cur.startsWith('EXTRA_') ? getCounterExtra(turnData, Number(cur.split('_')[1])) : turnData[cur];
+  if (!dataObj) return;
+  if (!dataObj.cope) dataObj.cope = {};
   dataObj.cope[val] = cope;
   const vlera = cope * Number(val);
-  const vCell = document.querySelector(`[data-vlera-for="${cur}:${val}"]`);
+  const gridRoot = inp.closest('.currency-grid');
+  const vCell = gridRoot.querySelector(`[data-vlera-for="${cur}:${val}"]`);
   if (vCell) vCell.textContent = fmt(vlera);
-  recomputePanel(cur);
-  persistCashCount();
+  recomputeCounterPanel(cnt, activeTurn, cur, gridRoot);
+  persistCounter(cnt);
 }
 
-function recomputePanel(cur){
-  const turnData = CASH_COUNT[ACTIVE_COUNT_TURN];
-  const data = cur.startsWith('EXTRA_') ? getExtra(turnData, Number(cur.split('_')[1])) : turnData[cur];
+function recomputeCounterPanel(cnt, activeTurn, cur, scopeEl){
+  const turnData = cnt.data[activeTurn];
+  const data = cur.startsWith('EXTRA_') ? getCounterExtra(turnData, Number(cur.split('_')[1])) : turnData[cur];
   if (!data) return;
+  if (!data.cope) data.cope = {};
   const denoms = cur.startsWith('EXTRA_') ? data.denoms : DENOMINATIONS[cur];
   let total = 0;
   denoms.forEach(val => { total += (data.cope[val] || 0) * Number(val); });
   data.total = total;
-  const totalCell = document.querySelector(`[data-total-for="${cur}"]`);
+  const root = scopeEl || document;
+  const totalCell = root.querySelector(`[data-total-for="${cur}"]`);
   if (totalCell) totalCell.textContent = `${fmt(total)} ${cur.startsWith('EXTRA_') ? (data.code||'') : cur}`;
 }
 
-function getMbylljeFaktike(turnLabel, currency){
-  const t = CASH_COUNT[turnLabel];
-  if (!t) return null;
-  if (t[currency]) return t[currency].total;
-  const extraMatch = (t.EXTRAS||[]).find(x => x.code === currency);
-  if (extraMatch) return extraMatch.total;
-  return null;
+// Tabs gjenerike (turn) — përdoret nga tri faqet e numërimit
+function renderGenericTurnTabs(containerEl, getActive, setActive, onSwitch){
+  const rmBtn = (t) => isAdmin() && TURNS.length > 1 ? ` <span class="turn-rm" data-rm-turn="${t}" title="Fshi turnin" style="margin-left:6px;color:var(--stamp-red);cursor:pointer;">✕</span>` : '';
+  containerEl.innerHTML = TURNS.map(t =>
+    `<button type="button" class="turn-tab ${t===getActive()?'active':''}" data-turn="${t}">${t}${rmBtn(t)}</button>`
+  ).join('');
+  containerEl.querySelectorAll('.turn-tab[data-turn]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      if (e.target.dataset && e.target.dataset.rmTurn) { removeTurn(e.target.dataset.rmTurn); onSwitch(); return; }
+      setActive(btn.dataset.turn); onSwitch();
+    });
+  });
 }
 
 // ==================================================================
-// Reconciliation + render
+// SCREEN NAVIGATION
 // ==================================================================
+function showOnly(id){
+  ['screen-recon','screen-count','screen-celje','screen-movements','screen-gjendje'].forEach(s => {
+    document.getElementById(s).style.display = (s===id) ? 'block' : 'none';
+  });
+  window.scrollTo(0,0);
+}
+document.getElementById('btnGoCount').addEventListener('click', () => { showOnly('screen-count'); renderCountScreen(); });
+document.getElementById('btnBackFromCount').addEventListener('click', () => showOnly('screen-recon'));
+document.getElementById('btnSaveCount').addEventListener('click', () => {
+  showOnly('screen-recon');
+  if (document.getElementById('results').style.display === 'block') runReconciliation();
+});
+
+document.getElementById('btnGoCelje').addEventListener('click', () => { showOnly('screen-celje'); renderCeljeScreen(); });
+document.getElementById('btnBackFromCelje').addEventListener('click', () => showOnly('screen-recon'));
+document.getElementById('btnSaveCelje').addEventListener('click', () => {
+  showOnly('screen-recon');
+  if (document.getElementById('results').style.display === 'block') runReconciliation();
+});
+
+document.getElementById('btnGoMovements').addEventListener('click', () => { showOnly('screen-movements'); renderMovementsScreen(); });
+document.getElementById('btnBackFromMovements').addEventListener('click', () => showOnly('screen-recon'));
+document.getElementById('btnSaveMovements').addEventListener('click', () => {
+  showOnly('screen-recon');
+  if (document.getElementById('results').style.display === 'block') runReconciliation();
+});
+
+document.getElementById('btnGoGjendje').addEventListener('click', () => { showOnly('screen-gjendje'); renderGjendjeScreen(); });
+document.getElementById('btnBackFromGjendje').addEventListener('click', () => showOnly('screen-recon'));
+document.getElementById('btnSaveGjendje').addEventListener('click', () => {
+  showOnly('screen-recon');
+  if (document.getElementById('results').style.display === 'block') runReconciliation();
+});
+
+let ACTIVE_GJENDJE_TURN = TURNS[0];
+
+// ---------- Ndihmës: fushat me presje dhjetore ----------
+// Pranon "1.234,56", "1234,56" ose "1234.56"; kthen numër ose null.
+function parseDecimal(str){
+  if (str === null || str === undefined) return null;
+  const t = String(str).trim();
+  if (t === '') return null;
+  let s;
+  if (t.includes(',')) s = t.replace(/\./g, '').replace(',', '.');
+  else s = t;
+  const n = Number(s);
+  return Number.isNaN(n) ? null : n;
+}
+// Lidh një fushë teksti me formatim: gjatë shkrimit ruan vlerën, në dalje e shfaq "1.234,56"
+function wireDecimalInput(inp, initialValue, onValue){
+  if (initialValue !== null && initialValue !== undefined && initialValue !== 0 && initialValue !== '') {
+    inp.value = fmt(Number(initialValue));
+  }
+  inp.addEventListener('input', () => { onValue(parseDecimal(inp.value)); });
+  inp.addEventListener('blur', () => {
+    const v = parseDecimal(inp.value);
+    inp.value = v === null ? '' : fmt(v);
+  });
+  inp.addEventListener('focus', () => inp.select());
+}
+
+function renderGjendjeScreen(){
+  if (!TURNS.includes(ACTIVE_GJENDJE_TURN)) ACTIVE_GJENDJE_TURN = TURNS[0];
+  renderGenericTurnTabs(document.getElementById('gjendjeTurnTabs'), () => ACTIVE_GJENDJE_TURN, (t) => { ACTIVE_GJENDJE_TURN = t; renderGjendjeScreen(); }, renderGjendjeScreen);
+  ensureGjendjeSistTurn(ACTIVE_GJENDJE_TURN);
+  const turnData = GJENDJE_SIST[ACTIVE_GJENDJE_TURN];
+  const host = document.getElementById('gjendjeGrids');
+  const rows = turnData.currencies.map(cur => `
+    <tr>
+      <td class="cur">${cur}</td>
+      <td><input type="text" inputmode="decimal" class="gjendje-input" data-cur="${cur}" placeholder="0,00"></td>
+      <td><button type="button" class="denom-rm" data-rm-cur="${cur}">✕</button></td>
+    </tr>`).join('');
+  host.innerHTML = `
+    <table class="move-table">
+      <thead><tr><th>Monedha</th><th>Gjendja sipas Sistemit</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="add-cur-row">
+      <input type="text" id="newGjendjeCur" placeholder="KOD (p.sh. CHF)" maxlength="6">
+      <button type="button" class="add-row-btn" id="btnAddGjendjeCur" style="width:auto;">+ Shto Monedhë</button>
+    </div>`;
+
+  host.querySelectorAll('.gjendje-input').forEach(inp => {
+    const cur = inp.dataset.cur;
+    wireDecimalInput(inp, turnData.data[cur], (v) => {
+      turnData.data[cur] = v;
+      persistGjendjeSist();
+    });
+  });
+  host.querySelectorAll('[data-rm-cur]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cur = btn.dataset.rmCur;
+      turnData.currencies = turnData.currencies.filter(c => c !== cur);
+      delete turnData.data[cur];
+      persistGjendjeSist();
+      renderGjendjeScreen();
+    });
+  });
+  document.getElementById('btnAddGjendjeCur').addEventListener('click', () => {
+    const code = document.getElementById('newGjendjeCur').value.trim().toUpperCase();
+    if (!code || turnData.currencies.includes(code)) return;
+    turnData.currencies.push(code);
+    persistGjendjeSist();
+    renderGjendjeScreen();
+  });
+}
+
+// ---------- Heqja e turneve (vetëm Admin) ----------
+function isAdmin(){ return CURRENT_SESSION && CURRENT_SESSION.role === 'admin'; }
+function removeTurn(label){
+  if (!isAdmin()) return;
+  if (TURNS.length <= 1) { alert('Duhet të mbetet së paku një turn.'); return; }
+  if (!confirm(`Të fshihet "${label}" me të gjitha të dhënat e tij (bilanc, çelje, shtesa, lëvizje, numërime)?`)) return;
+  TURNS = TURNS.filter(t => t !== label);
+  persistTurns();
+  delete BILANCI_BY_TURN[label];
+  [MBYLLJE_CNT, CELJE_CNT, SHTESA_CNT].forEach(cnt => { delete cnt.data[label]; persistCounter(cnt); });
+  delete GJENDJE_SIST[label];
+  persistGjendjeSist();
+  delete MOVEMENTS[label];
+  persistMovements();
+  if (ACTIVE_BILANCI_TURN === label) ACTIVE_BILANCI_TURN = TURNS[0];
+  if (ACTIVE_COUNT_TURN === label) ACTIVE_COUNT_TURN = TURNS[0];
+  if (ACTIVE_CELJE_TURN === label) ACTIVE_CELJE_TURN = TURNS[0];
+  if (ACTIVE_MOVE_TURN === label) ACTIVE_MOVE_TURN = TURNS[0];
+  if (ACTIVE_GJENDJE_TURN === label) ACTIVE_GJENDJE_TURN = TURNS[0];
+}
+
+// ---------- Numërimi Fizik (Mbyllje Faktike) ----------
+let ACTIVE_COUNT_TURN = TURNS[0];
+function renderCountScreen(){
+  if (!TURNS.includes(ACTIVE_COUNT_TURN)) ACTIVE_COUNT_TURN = TURNS[0];
+  renderGenericTurnTabs(document.getElementById('countTurnTabs'), () => ACTIVE_COUNT_TURN, (t) => { ACTIVE_COUNT_TURN = t; renderCountScreen(); }, renderCountScreen);
+  renderCounterGrid(MBYLLJE_CNT, document.getElementById('countGrids'), ACTIVE_COUNT_TURN);
+}
+
+// ---------- Çelje Arke dhe Shtesa (dy nën-tabe) ----------
+let ACTIVE_CELJE_SUB = 'celje'; // 'celje' | 'shtesa'
+let ACTIVE_CELJE_TURN = TURNS[0];
+function renderCeljeScreen(){
+  if (!TURNS.includes(ACTIVE_CELJE_TURN)) ACTIVE_CELJE_TURN = TURNS[0];
+  document.getElementById('subtabCelje').classList.toggle('active', ACTIVE_CELJE_SUB==='celje');
+  document.getElementById('subtabShtesa').classList.toggle('active', ACTIVE_CELJE_SUB==='shtesa');
+  renderGenericTurnTabs(document.getElementById('celjeTurnTabs'), () => ACTIVE_CELJE_TURN, (t) => { ACTIVE_CELJE_TURN = t; renderCeljeScreen(); }, renderCeljeScreen);
+  const turnIdx = TURNS.indexOf(ACTIVE_CELJE_TURN);
+  if (ACTIVE_CELJE_SUB === 'celje' && turnIdx > 0){
+    // Çelja e turneve pasuese vjen automatikisht nga Mbyllja Faktike e turnit paraardhës
+    const prevTurn = TURNS[turnIdx - 1];
+    ensureTurnCounter(MBYLLJE_CNT, prevTurn);
+    const prev = MBYLLJE_CNT.data[prevTurn];
+    const lines = [];
+    Object.keys(DENOMINATIONS).forEach(cur => {
+      if (prev[cur] && prev[cur].total > 0) lines.push(`<tr><td class="cur">${cur}</td><td>${fmt(prev[cur].total)}</td></tr>`);
+    });
+    (prev.EXTRAS||[]).forEach(x => { if (x.total > 0) lines.push(`<tr><td class="cur">${x.code||'?'}</td><td>${fmt(x.total)}</td></tr>`); });
+    document.getElementById('celjeGrids').innerHTML = `
+      <div class="empty-note" style="text-align:left;padding:18px;border:1px solid var(--brass-light);background:rgba(156,122,50,0.05);border-radius:2px;">
+        ℹ️ Çelja e arkës për <b>${ACTIVE_CELJE_TURN}</b> merret automatikisht nga <b>Mbyllja Faktike e ${prevTurn}</b>
+        (nga faqja "Numërimi Fizik i Arkës") dhe nuk plotësohet këtu.
+        ${lines.length ? `<table class="move-table" style="margin-top:14px;max-width:360px;">
+          <thead><tr><th>Monedha</th><th>Çelja (= Mbyllja e ${prevTurn})</th></tr></thead>
+          <tbody>${lines.join('')}</tbody></table>` : `<div style="margin-top:10px;">${prevTurn} ende s'ka numërim fizik të regjistruar.</div>`}
+      </div>`;
+    return;
+  }
+  const cnt = ACTIVE_CELJE_SUB === 'celje' ? CELJE_CNT : SHTESA_CNT;
+  renderCounterGrid(cnt, document.getElementById('celjeGrids'), ACTIVE_CELJE_TURN);
+}
+document.getElementById('subtabCelje').addEventListener('click', () => { ACTIVE_CELJE_SUB = 'celje'; renderCeljeScreen(); });
+document.getElementById('subtabShtesa').addEventListener('click', () => { ACTIVE_CELJE_SUB = 'shtesa'; renderCeljeScreen(); });
+
+// ---------- Tërheqje/Pagesa & Dërgesa/Sigurime ----------
+const MOVEMENTS = {}; // { 'Turni 1': { currencies:['ALL','EUR','USD','GBP'], data:{ALL:{terheqje,pagesa,sigurime}} } }
+(function loadMovements(){
+  try { const raw = localStorage.getItem(`raa_movements_${todayKey()}`); if (raw) Object.assign(MOVEMENTS, JSON.parse(raw)); } catch(e){}
+})();
+function persistMovements(){ try { localStorage.setItem(`raa_movements_${todayKey()}`, JSON.stringify(MOVEMENTS)); } catch(e){} }
+function ensureMovementsTurn(turn){
+  if (!MOVEMENTS[turn]) MOVEMENTS[turn] = { currencies:['ALL','EUR','USD','GBP'], data:{} };
+  if (!Array.isArray(MOVEMENTS[turn].currencies)) MOVEMENTS[turn].currencies = ['ALL','EUR','USD','GBP'];
+  if (!MOVEMENTS[turn].data) MOVEMENTS[turn].data = {};
+  MOVEMENTS[turn].currencies.forEach(cur => {
+    if (!MOVEMENTS[turn].data[cur]) MOVEMENTS[turn].data[cur] = { terheqje:0, pagesa:0, sigurime:0 };
+    const d = MOVEMENTS[turn].data[cur];
+    if (typeof d.terheqje !== 'number') d.terheqje = 0;
+    if (typeof d.pagesa !== 'number') d.pagesa = 0;
+    if (typeof d.sigurime !== 'number') d.sigurime = 0;
+  });
+}
+function getMovements(turn, currency){
+  const t = MOVEMENTS[turn];
+  if (!t || !t.data[currency]) return { terheqje:0, pagesa:0, sigurime:0 };
+  return t.data[currency];
+}
+
+let ACTIVE_MOVE_TURN = TURNS[0];
+function renderMovementsScreen(){
+  if (!TURNS.includes(ACTIVE_MOVE_TURN)) ACTIVE_MOVE_TURN = TURNS[0];
+  renderGenericTurnTabs(document.getElementById('moveTurnTabs'), () => ACTIVE_MOVE_TURN, (t) => { ACTIVE_MOVE_TURN = t; renderMovementsScreen(); }, renderMovementsScreen);
+  ensureMovementsTurn(ACTIVE_MOVE_TURN);
+  const turnData = MOVEMENTS[ACTIVE_MOVE_TURN];
+  const host = document.getElementById('moveTableHost');
+  const rows = turnData.currencies.map(cur => {
+    return `<tr>
+      <td class="cur">${cur}</td>
+      <td><input type="text" inputmode="decimal" class="move-input" data-cur="${cur}" data-field="terheqje" placeholder="0,00"></td>
+      <td><input type="text" inputmode="decimal" class="move-input" data-cur="${cur}" data-field="pagesa" placeholder="0,00"></td>
+      <td><input type="text" inputmode="decimal" class="move-input" data-cur="${cur}" data-field="sigurime" placeholder="0,00"></td>
+      <td><button type="button" class="denom-rm" data-rm-cur="${cur}">✕</button></td>
+    </tr>`;
+  }).join('');
+  host.innerHTML = `
+    <table class="move-table">
+      <thead><tr><th>Monedha</th><th>Tërheqje</th><th>Pagesa dhe Dërgesa</th><th>Sigurime</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="add-cur-row">
+      <input type="text" id="newMoveCur" placeholder="KOD (p.sh. CHF)" maxlength="6">
+      <button type="button" class="add-row-btn" id="btnAddMoveCur" style="width:auto;">+ Shto Monedhë</button>
+    </div>`;
+
+  host.querySelectorAll('.move-input').forEach(inp => {
+    const cur = inp.dataset.cur, field = inp.dataset.field;
+    wireDecimalInput(inp, turnData.data[cur][field], (v) => {
+      turnData.data[cur][field] = v === null ? 0 : v;
+      persistMovements();
+    });
+  });
+  host.querySelectorAll('[data-rm-cur]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cur = btn.dataset.rmCur;
+      turnData.currencies = turnData.currencies.filter(c => c !== cur);
+      delete turnData.data[cur];
+      persistMovements();
+      renderMovementsScreen();
+    });
+  });
+  document.getElementById('btnAddMoveCur').addEventListener('click', () => {
+    const code = document.getElementById('newMoveCur').value.trim().toUpperCase();
+    if (!code || turnData.currencies.includes(code)) return;
+    turnData.currencies.push(code);
+    turnData.data[code] = { terheqje:0, pagesa:0, sigurime:0 };
+    persistMovements();
+    renderMovementsScreen();
+  });
+}
+
+// ==================================================================
+// RAKORDIMI
+// ==================================================================
+const MARZHI_MANUAL = 0.5;
+const MANUAL_FIELDS = {}; // rowId -> { sistemi }
+(function loadManual(){
+  try { const raw = localStorage.getItem(`raa_manual_${todayKey()}`); if (raw) Object.assign(MANUAL_FIELDS, JSON.parse(raw)); } catch(e){}
+})();
+function persistManualField(rowId, patch){
+  MANUAL_FIELDS[rowId] = Object.assign({}, MANUAL_FIELDS[rowId], patch);
+  try { localStorage.setItem(`raa_manual_${todayKey()}`, JSON.stringify(MANUAL_FIELDS)); } catch(e){}
+}
+
 document.getElementById('btnRun').addEventListener('click', runReconciliation);
+
+function fmtOrPlaceholder(v, placeholder){
+  return v === null ? `<span class="needs-input">${placeholder}</span>` : fmt(v);
+}
 
 function runReconciliation(){
   const tolAll = Number(document.getElementById('tolAll').value) || 0;
@@ -880,12 +1007,11 @@ function runReconciliation(){
   results.innerHTML = '';
   results.style.display = 'block';
 
-  const validBilanci = BILANCI_STATE.filter(b => b.rows && !b.error).sort((a,b)=>a.turn-b.turn);
+  const activeTurns = TURNS.filter(t => BILANCI_BY_TURN[t] && BILANCI_BY_TURN[t].rows);
 
-  validBilanci.forEach(entry => {
-    const turnLabel = `Turni ${entry.turn}`;
+  activeTurns.forEach(turnLabel => {
+    const entry = BILANCI_BY_TURN[turnLabel];
     const agg = aggregateBilanci(entry.rows);
-
     const block = document.createElement('div');
     block.className = 'turn-block';
 
@@ -895,35 +1021,45 @@ function runReconciliation(){
     Object.keys(agg).forEach(cur => {
       const eff = agg[cur];
       const tol = cur === 'ALL' ? tolAll : tolFx;
-      const mbylljeFaktike = getMbylljeFaktike(turnLabel, cur);
-      const arkaCelje = 0; // fillimisht 0 — plotësohet manualisht nga operatori
-      const base = arkaCelje + eff.Blerje + eff.Shitje;
-      const rezultat = base;
+      // Çelje Arke: Turni i parë nga faqja "Çelje Arke dhe Shtesa"; turnet pasuese nga Mbyllja Faktike e turnit paraardhës
+      const turnIdx = TURNS.indexOf(turnLabel);
+      const arkaCelje = turnIdx > 0
+        ? getCounterTotal(MBYLLJE_CNT, TURNS[turnIdx - 1], cur)
+        : getCounterTotal(CELJE_CNT, turnLabel, cur);
+      const shtesaPakesime = getCounterTotal(SHTESA_CNT, turnLabel, cur) || 0;
+      const mv = getMovements(turnLabel, cur);
+      const mbylljeFaktike = getCounterTotal(MBYLLJE_CNT, turnLabel, cur);
+      const gjendjeSistemi = getGjendjeSistemi(turnLabel, cur);
+      const rezultat = (arkaCelje||0) + shtesaPakesime + eff.Blerje + eff.Shitje - mv.terheqje + mv.pagesa + mv.sigurime;
       const diferenca = (mbylljeFaktike === null) ? null : (rezultat - mbylljeFaktike);
+      const difSistemi = (mbylljeFaktike === null || gjendjeSistemi === null) ? null : (mbylljeFaktike - gjendjeSistemi);
       const mismatchDiff = diferenca !== null && Math.abs(diferenca) > tol;
-      if (mismatchDiff) anyFlag = true;
+      const sysFlag = difSistemi !== null && Math.abs(difSistemi) > MARZHI_MANUAL;
+      if (mismatchDiff || sysFlag) anyFlag = true;
+      const rowId = `${turnLabel}__${cur}`;
       tableRows.push({
-        rowId: `${entry.turn}__${cur}`, Monedha: cur,
-        ArkaCelje: arkaCelje, base, effBlerje: eff.Blerje, effShitje: eff.Shitje,
-        MbylljeFaktike: mbylljeFaktike, rezultat, diferenca, mismatchDiff, flagged: mismatchDiff,
+        rowId, Monedha: cur, arkaCelje, shtesaPakesime, effBlerje: eff.Blerje, effShitje: eff.Shitje,
+        uftT: mv.terheqje, uftP: mv.pagesa, sig: mv.sigurime,
+        MbylljeFaktike: mbylljeFaktike, gjendjeSistemi, rezultat, diferenca, difSistemi,
+        mismatchDiff, sysFlag, flagged: mismatchDiff || sysFlag,
       });
     });
 
     const rowsHtml = tableRows.map(r => `
       <tr class="${r.flagged?'flagged':''}">
         <td class="cur">${r.Monedha}</td>
-        <td><input type="number" step="0.01" class="arka-celje-input op-input" data-row-id="${r.rowId}" aria-label="Çelje Arke për ${r.Monedha}" placeholder="0.00"></td>
-        <td><input type="number" step="0.01" class="shtesa-pakesime-input op-input" data-row-id="${r.rowId}" aria-label="Shtesa/Pakësime për ${r.Monedha}" placeholder="+/- 0.00"></td>
+        <td class="auto-val">${fmtOrPlaceholder(r.arkaCelje, 'pa plotësuar')}</td>
+        <td class="auto-val">${fmt(r.shtesaPakesime)}</td>
         <td>${fmt(r.effBlerje)}</td>
         <td>${fmt(r.effShitje)}</td>
-        <td><input type="number" step="0.01" class="uft-terheqje-input op-input" data-row-id="${r.rowId}" aria-label="UFT Tërheqje për ${r.Monedha}" placeholder="0.00"></td>
-        <td><input type="number" step="0.01" class="uft-pagesa-input op-input" data-row-id="${r.rowId}" aria-label="UFT Pagesa dhe Dërgesa për ${r.Monedha}" placeholder="0.00"></td>
-        <td><input type="number" step="0.01" class="sigupas-input op-input" data-row-id="${r.rowId}" aria-label="Sigupas-sig TPL për ${r.Monedha}" placeholder="0.00"></td>
-        <td class="rezultat-cell" data-rezultat-for="${r.rowId}">${fmt(r.rezultat)}</td>
-        <td ${r.MbylljeFaktike===null?'class="needs-count"':''}>${r.MbylljeFaktike===null ? 'pa numëruar' : fmt(r.MbylljeFaktike)}</td>
-        <td><input type="number" step="0.01" class="sistemi-input" data-row-id="${r.rowId}" aria-label="Gjendje sipas sistemit për ${r.Monedha}" placeholder="fut manualisht"></td>
-        <td class="diff-cell" data-diff-for="${r.rowId}">—</td>
-        <td class="diff-cell" data-diff3-for="${r.rowId}">${r.diferenca===null?'—':fmt(r.diferenca)}</td>
+        <td class="auto-val">${fmt(r.uftT)}</td>
+        <td class="auto-val">${fmt(r.uftP)}</td>
+        <td class="auto-val">${fmt(r.sig)}</td>
+        <td class="rezultat-cell">${fmt(r.rezultat)}</td>
+        <td class="auto-val">${fmtOrPlaceholder(r.MbylljeFaktike, 'pa numëruar')}</td>
+        <td class="auto-val">${fmtOrPlaceholder(r.gjendjeSistemi, 'pa plotësuar')}</td>
+        <td class="diff-cell ${r.sysFlag?'cell-alert':''}">${r.difSistemi===null?'—':fmt(r.difSistemi)}</td>
+        <td class="diff-cell ${r.mismatchDiff?'cell-alert':''}">${r.diferenca===null?'—':fmt(r.diferenca)}</td>
       </tr>`).join('');
 
     const seq = checkInvoiceSequence(entry.rows);
@@ -932,134 +1068,35 @@ function runReconciliation(){
 
     block.innerHTML = `
       <div class="turn-head">
-        <div>
-          <h2>${turnLabel}</h2>
-          <div class="device">Pajisje fiskale: ${entry.meta.pajisje} · ${entry.meta.nga}</div>
-        </div>
+        <div><h2>${turnLabel}</h2><div class="device">Pajisje fiskale: ${entry.meta.pajisje} · ${entry.meta.nga}</div></div>
         <div class="stamp ${anyFlag?'bad':'ok'}">${anyFlag ? 'Për kontroll' : 'Balancuar'}</div>
       </div>
       <div class="table-scroll">
       <table class="ledger">
         <thead><tr>
           <th>Monedha</th><th>Çelje Arke</th><th>Shtesa/Pakësime</th><th>Blerje (bilanc)</th><th>Shitje (bilanc)</th>
-          <th>UFT Tërheqje</th><th>UFT Pagesa dhe Dërgesa</th><th>Sigupas-sig TPL</th>
+          <th>UFT Tërheqje</th><th>UFT Pagesa dhe Dërgesa</th><th>Sigurime</th>
           <th>Rezultat i rikalkuluar</th><th>Mbyllje faktike</th><th>Gjendje sipas Sistemit</th>
-          <th>Diferenca (Faktike − Sistemi)</th><th>Diferenca (Rezultat − Faktike)</th>
+          <th>Dif. (Faktike−Sistemi)</th><th>Dif. (Rezultat−Faktike)</th>
         </tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table>
       </div>
-      ${hasWarnings ? `<div class="warnings">
-        <h4>Kontrolle shtesë</h4>
-        <ul>
+      ${hasWarnings ? `<div class="warnings"><h4>Kontrolle shtesë</h4><ul>
           ${seq.gaps.length ? `<li>Fatura që mungojnë: ${seq.gaps.join(', ')}</li>` : ''}
           ${seq.dup.length ? `<li>Fatura të dublikuara: ${seq.dup.join(', ')}</li>` : ''}
           ${kurs.map(k=>`<li>Kurs jashtë normës — fatura ${k.numri} (${k.monedha}, ${k.veprimi}): ${k.kursi} vs mesatare ${k.mesatare.toFixed(4)}</li>`).join('')}
-        </ul>
-      </div>` : ''}
+        </ul></div>` : ''}
     `;
     results.appendChild(block);
-    wireManualInputs(block, tableRows, tolAll, tolFx, MARZHI_MANUAL);
   });
 
-  if (!validBilanci.length){
+  if (!activeTurns.length){
     results.innerHTML = '<div class="empty-note">Asnjë bilanc i lexueshëm.</div>';
   }
 
   const exportBar = document.getElementById('exportBar');
-  exportBar.style.display = (validBilanci.length && CURRENT_SESSION && CURRENT_SESSION.role === 'admin') ? 'flex' : 'none';
-}
-
-const MARZHI_MANUAL = 0.5; // marzhi i gabimit: 0.5 (ALL ose monedhë e huaj)
-
-function wireManualInputs(block, tableRows, tolAll, tolFx, marzhi){
-  const findRow = (rid) => tableRows.find(row => row.rowId === rid);
-
-  function refreshSistemi(rid){
-    const r = findRow(rid);
-    const inp = block.querySelector(`.sistemi-input[data-row-id="${CSS.escape(rid)}"]`);
-    const diffCell = block.querySelector(`[data-diff-for="${CSS.escape(rid)}"]`);
-    const val = inp.value.trim() === '' ? null : Number(inp.value);
-    let manualDiff = null, manualFlag = false;
-    if (val !== null && !Number.isNaN(val) && r.MbylljeFaktike !== null){
-      manualDiff = r.MbylljeFaktike - val;
-      manualFlag = Math.abs(manualDiff) > marzhi;
-    }
-    diffCell.textContent = manualDiff === null ? '—' : fmt(manualDiff);
-    diffCell.classList.toggle('cell-alert', manualFlag);
-    r.sysFlag = manualFlag;
-    applyRowFlag(rid);
-    persistManualField(rid, { sistemi: inp.value });
-  }
-
-  function refreshRezultat(rid){
-    const r = findRow(rid);
-    const tol = r.Monedha === 'ALL' ? tolAll : tolFx;
-    const arkaCelje = readNum(block, '.arka-celje-input', rid);
-    const shtesaPakesime = readNum(block, '.shtesa-pakesime-input', rid);
-    const uftT = readNum(block, '.uft-terheqje-input', rid);
-    const uftP = readNum(block, '.uft-pagesa-input', rid);
-    const sig = readNum(block, '.sigupas-input', rid);
-    const rezultat = arkaCelje + shtesaPakesime + r.effBlerje + r.effShitje - uftT + uftP + sig;
-    const diferenca = (r.MbylljeFaktike === null) ? null : (rezultat - r.MbylljeFaktike);
-    const mismatchDiff = diferenca !== null && Math.abs(diferenca) > tol;
-
-    const rezCell = block.querySelector(`[data-rezultat-for="${CSS.escape(rid)}"]`);
-    const diff3Cell = block.querySelector(`[data-diff3-for="${CSS.escape(rid)}"]`);
-    rezCell.textContent = fmt(rezultat);
-    diff3Cell.textContent = diferenca === null ? '—' : fmt(diferenca);
-    diff3Cell.classList.toggle('cell-alert', mismatchDiff);
-
-    r.ArkaCelje = arkaCelje; r.rezultat = rezultat; r.diferenca = diferenca; r.mismatchDiff = mismatchDiff;
-    applyRowFlag(rid);
-    persistManualField(rid, {
-      arkaCelje: block.querySelector(`.arka-celje-input[data-row-id="${CSS.escape(rid)}"]`).value,
-      shtesaPakesime: block.querySelector(`.shtesa-pakesime-input[data-row-id="${CSS.escape(rid)}"]`).value,
-      uftT: block.querySelector(`.uft-terheqje-input[data-row-id="${CSS.escape(rid)}"]`).value,
-      uftP: block.querySelector(`.uft-pagesa-input[data-row-id="${CSS.escape(rid)}"]`).value,
-      sig: block.querySelector(`.sigupas-input[data-row-id="${CSS.escape(rid)}"]`).value,
-    });
-  }
-
-  function applyRowFlag(rid){
-    const r = findRow(rid);
-    const tr = block.querySelector(`.sistemi-input[data-row-id="${CSS.escape(rid)}"]`).closest('tr');
-    const flagged = r.mismatchDiff || !!r.sysFlag;
-    tr.classList.toggle('flagged', flagged);
-    updateStamp(block);
-  }
-
-  block.querySelectorAll('.sistemi-input').forEach(inp => {
-    inp.addEventListener('input', () => refreshSistemi(inp.dataset.rowId));
-  });
-  block.querySelectorAll('.op-input').forEach(inp => {
-    inp.addEventListener('input', () => refreshRezultat(inp.dataset.rowId));
-  });
-
-  // rikthe vlerat e ruajtura nga sesionet e mëparshme (të njëjtën ditë)
-  tableRows.forEach(r => {
-    const saved = MANUAL_FIELDS[r.rowId];
-    if (!saved) return;
-    const setVal = (selector, v) => {
-      if (v === undefined || v === null || v === '') return;
-      const inp = block.querySelector(`${selector}[data-row-id="${CSS.escape(r.rowId)}"]`);
-      if (inp) inp.value = v;
-    };
-    setVal('.arka-celje-input', saved.arkaCelje);
-    setVal('.shtesa-pakesime-input', saved.shtesaPakesime);
-    setVal('.uft-terheqje-input', saved.uftT);
-    setVal('.uft-pagesa-input', saved.uftP);
-    setVal('.sigupas-input', saved.sig);
-    setVal('.sistemi-input', saved.sistemi);
-    refreshRezultat(r.rowId);
-    refreshSistemi(r.rowId);
-  });
-}
-
-function readNum(block, selector, rid){
-  const inp = block.querySelector(`${selector}[data-row-id="${CSS.escape(rid)}"]`);
-  const v = inp.value.trim();
-  return v === '' ? 0 : (Number.isNaN(Number(v)) ? 0 : Number(v));
+  exportBar.style.display = activeTurns.length ? 'flex' : 'none';
 }
 
 function updateStamp(block){
@@ -1076,8 +1113,7 @@ document.getElementById('btnExport').addEventListener('click', exportToExcel);
 function cellNum(text){
   if (text === undefined || text === null) return null;
   const t = text.trim();
-  if (t === '—' || t === '' || t === 'pa numëruar') return null;
-  // formati: pikë për mijëshe, presje për dhjetore (p.sh. "1.447.000,50")
+  if (t === '—' || t === '' || t === 'pa numëruar' || t === 'pa plotësuar') return null;
   const n = Number(t.replace(/\./g, '').replace(',', '.'));
   return Number.isNaN(n) ? null : n;
 }
@@ -1090,7 +1126,7 @@ function inputNum(inp){
 function exportToExcel(){
   const wb = XLSX.utils.book_new();
   const headers = ['Monedha','Çelje Arke','Shtesa/Pakësime','Blerje (bilanc)','Shitje (bilanc)','UFT Tërheqje',
-    'UFT Pagesa dhe Dërgesa','Sigupas-sig TPL','Rezultat i rikalkuluar','Mbyllje Faktike',
+    'UFT Pagesa dhe Dërgesa','Sigurime','Rezultat i rikalkuluar','Mbyllje Faktike',
     'Gjendje sipas Sistemit','Diferenca (Faktike − Sistemi)','Diferenca (Rezultat − Faktike)'];
 
   document.querySelectorAll('#results .turn-block').forEach(block => {
@@ -1098,21 +1134,7 @@ function exportToExcel(){
     const rows = [headers];
     block.querySelectorAll('table.ledger tbody tr').forEach(tr => {
       const tds = tr.querySelectorAll('td');
-      rows.push([
-        tds[0].textContent.trim(),
-        inputNum(tds[1].querySelector('input')),
-        inputNum(tds[2].querySelector('input')),
-        cellNum(tds[3].textContent),
-        cellNum(tds[4].textContent),
-        inputNum(tds[5].querySelector('input')),
-        inputNum(tds[6].querySelector('input')),
-        inputNum(tds[7].querySelector('input')),
-        cellNum(tds[8].textContent),
-        cellNum(tds[9].textContent),
-        inputNum(tds[10].querySelector('input')),
-        cellNum(tds[11].textContent),
-        cellNum(tds[12].textContent),
-      ]);
+      rows.push([...tds].map((td, i) => i === 0 ? td.textContent.trim() : cellNum(td.textContent)));
     });
     const ws = XLSX.utils.aoa_to_sheet(rows);
     ws['!cols'] = headers.map(() => ({ wch: 16 }));
@@ -1122,6 +1144,80 @@ function exportToExcel(){
   const today = new Date().toISOString().slice(0,10);
   XLSX.writeFile(wb, `Rakordimi_Arkes_${today}.xlsx`);
 }
+
+// ---------- Eksport për çdo tab (Numërim Fizik / Çelje / Shtesa / Gjendje / Lëvizje) ----------
+function exportCounterToExcel(cnt, titull){
+  const wb = XLSX.utils.book_new();
+  TURNS.forEach(turn => {
+    ensureTurnCounter(cnt, turn);
+    const t = cnt.data[turn];
+    const rows = [['Monedha','Prerja','Copë','Vlera']];
+    Object.keys(DENOMINATIONS).forEach(cur => {
+      let subtotal = 0;
+      DENOMINATIONS[cur].forEach(val => {
+        const cope = t[cur].cope[val] || 0;
+        if (cope > 0) { rows.push([cur, val, cope, cope*val]); subtotal += cope*val; }
+      });
+      if (subtotal > 0) rows.push([cur, 'TOTALI', null, subtotal]);
+    });
+    (t.EXTRAS||[]).forEach(extra => {
+      let subtotal = 0;
+      extra.denoms.forEach(val => {
+        const cope = extra.cope[val] || 0;
+        if (cope > 0) { rows.push([extra.code||'?', val, cope, cope*val]); subtotal += cope*val; }
+      });
+      if (subtotal > 0) rows.push([extra.code||'?', 'TOTALI', null, subtotal]);
+    });
+    if (rows.length === 1) rows.push(['(pa të dhëna)', null, null, null]);
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:10},{wch:12},{wch:8},{wch:14}];
+    XLSX.utils.book_append_sheet(wb, ws, turn.slice(0,31));
+  });
+  const today = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `${titull}_${today}.xlsx`);
+}
+
+function exportMovementsToExcel(){
+  const wb = XLSX.utils.book_new();
+  TURNS.forEach(turn => {
+    ensureMovementsTurn(turn);
+    const t = MOVEMENTS[turn];
+    const rows = [['Monedha','Tërheqje','Pagesa dhe Dërgesa','Sigurime']];
+    t.currencies.forEach(cur => {
+      const d = t.data[cur];
+      rows.push([cur, d.terheqje||0, d.pagesa||0, d.sigurime||0]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:10},{wch:14},{wch:18},{wch:14}];
+    XLSX.utils.book_append_sheet(wb, ws, turn.slice(0,31));
+  });
+  const today = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `Terheqje_Pagesa_Sigurime_${today}.xlsx`);
+}
+
+document.getElementById('btnExportCount').addEventListener('click', () => exportCounterToExcel(MBYLLJE_CNT, 'Numerimi_Fizik'));
+document.getElementById('btnExportCelje').addEventListener('click', () => {
+  const cnt = ACTIVE_CELJE_SUB === 'celje' ? CELJE_CNT : SHTESA_CNT;
+  exportCounterToExcel(cnt, ACTIVE_CELJE_SUB === 'celje' ? 'Celje_Arke' : 'Shtesa');
+});
+document.getElementById('btnExportGjendje').addEventListener('click', () => {
+  const wb = XLSX.utils.book_new();
+  TURNS.forEach(turn => {
+    ensureGjendjeSistTurn(turn);
+    const t = GJENDJE_SIST[turn];
+    const rows = [['Monedha','Gjendja sipas Sistemit']];
+    t.currencies.forEach(cur => rows.push([cur, t.data[cur] === undefined || t.data[cur] === null ? null : Number(t.data[cur])]));
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:10},{wch:20}];
+    XLSX.utils.book_append_sheet(wb, ws, turn.slice(0,31));
+  });
+  const today = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `Gjendje_Sistemi_${today}.xlsx`);
+});
+document.getElementById('btnExportMovements').addEventListener('click', exportMovementsToExcel);
+
+// ---------- Nisja ----------
+renderBilanciSection();
 </script>
 </body>
 </html>
