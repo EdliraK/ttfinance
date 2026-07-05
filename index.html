@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rakordimi i Arkës — Këmbim Valutor</title>
+<title>Hyrje — Rakordimi i Arkës</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
     --paper: #F6F2E9;
@@ -18,904 +17,125 @@
     --line: #DBD2BC;
     --stamp-red: #A8382C;
     --stamp-red-bg: rgba(168,56,44,0.07);
-    --stamp-green: #2E6B4E;
-    --stamp-green-bg: rgba(46,107,78,0.08);
     --focus: #2E5FA8;
   }
   *{box-sizing:border-box;}
   body{
-    margin:0;
+    margin:0;min-height:100vh;
     background:var(--paper);
     color:var(--ink);
     font-family:'Inter',system-ui,sans-serif;
-    line-height:1.5;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
   }
-  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
-
-  header.masthead{
-    border-bottom:3px double var(--brass);
-    padding-bottom:18px;
-    margin-bottom:32px;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    flex-wrap:wrap;
-    gap:10px;
-  }
-  header.masthead h1{
-    font-family:'Fraunces',serif;
-    font-weight:700;
-    font-size:clamp(28px,4vw,38px);
-    margin:0;
-    letter-spacing:-0.01em;
-  }
-  header.masthead .kicker{
-    font-family:'IBM Plex Mono',monospace;
-    text-transform:uppercase;
-    letter-spacing:0.12em;
-    font-size:11px;
-    color:var(--brass);
-    margin-bottom:4px;
-  }
-  header.masthead .today{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:13px;
-    color:var(--ink-soft);
-  }
-  header.masthead .back-btn{
-    background:none;border:1px solid var(--line);color:var(--ink);
-    font-family:'IBM Plex Mono',monospace;font-size:12.5px;
-    padding:8px 14px;border-radius:2px;cursor:pointer;
-  }
-  header.masthead .back-btn:hover{border-color:var(--brass);color:var(--brass);}
-
-  section.panel{
+  .card{
+    width:100%;max-width:380px;
     background:var(--paper-raised);
     border:1px solid var(--line);
     border-radius:2px;
-    padding:24px;
-    margin-bottom:24px;
+    padding:36px 32px;
     position:relative;
   }
-  section.panel::before{
-    content:attr(data-step);
-    position:absolute;
-    top:-13px;
-    left:20px;
-    background:var(--paper);
-    padding:0 10px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    letter-spacing:0.1em;
-    color:var(--brass);
-    text-transform:uppercase;
+  .card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:4px;
+    background:var(--brass);
   }
-
-  .drop-grid{display:grid;grid-template-columns:1fr;gap:20px;}
-
-  .dropzone{
-    border:1.5px dashed var(--line);
-    border-radius:2px;
-    padding:26px 18px;
-    text-align:center;
-    cursor:pointer;
-    transition:border-color .15s ease, background .15s ease;
-    background:var(--paper);
+  .kicker{
+    font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.12em;
+    font-size:10.5px;color:var(--brass);text-align:center;margin-bottom:6px;
   }
-  .dropzone:hover, .dropzone.drag{
-    border-color:var(--brass);
-    background:rgba(156,122,50,0.06);
+  h1{
+    font-family:'Fraunces',serif;font-weight:700;font-size:26px;text-align:center;
+    margin:0 0 28px;letter-spacing:-0.01em;
   }
-  .dropzone:focus-within{outline:2px solid var(--focus); outline-offset:2px;}
-  .dropzone h3{
-    margin:0 0 6px;
-    font-family:'Fraunces',serif;
-    font-size:17px;
-  }
-  .dropzone p{margin:0;font-size:13px;color:var(--ink-soft);}
-  .dropzone input{display:none;}
-
-  .file-list{margin-top:14px;text-align:left;}
-  .file-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
-    padding:7px 0;
-    border-bottom:1px solid var(--line);
-  }
-  .file-row .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);}
-  .file-row .meta{color:var(--ink-soft);}
-  .file-row select{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    border:1px solid var(--line);
-    background:var(--paper-raised);
-    padding:3px 6px;
-    border-radius:2px;
-  }
-  .file-row .err{color:var(--stamp-red);}
-  .file-row .rm{
-    background:none;border:none;cursor:pointer;color:var(--ink-soft);
-    font-size:15px;line-height:1;padding:2px 6px;
-  }
-  .file-row .rm:hover{color:var(--stamp-red);}
-
-  .count-cta{
-    display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;
-    border:1px solid var(--brass-light);background:rgba(156,122,50,0.06);
-    border-radius:2px;padding:18px 20px;margin-top:20px;
-  }
-  .count-cta h3{margin:0 0 4px;font-family:'Fraunces',serif;font-size:17px;}
-  .count-cta p{margin:0;font-size:13px;color:var(--ink-soft);}
-
-  .controls-row{
-    display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;
-    margin-top:18px;padding-top:18px;border-top:1px solid var(--line);
-  }
+  .field{margin-bottom:16px;}
   .field label{
     display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;
-    color:var(--ink-soft);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;
+    color:var(--ink-soft);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;
   }
   .field input{
-    font-family:'IBM Plex Mono',monospace;
-    border:1px solid var(--line);
-    background:var(--paper);
-    padding:8px 10px;
-    width:110px;
-    border-radius:2px;
-    font-size:13px;
+    width:100%;font-family:'IBM Plex Mono',monospace;font-size:14px;
+    border:1px solid var(--line);background:var(--paper);
+    padding:11px 12px;border-radius:2px;color:var(--ink);
   }
-  .field input:focus{outline:2px solid var(--focus);outline-offset:1px;}
+  .field input:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--focus);}
 
-  button.primary, button.secondary{
-    background:var(--ink);
-    color:var(--paper);
-    border:none;
-    padding:13px 26px;
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:16px;
-    border-radius:2px;
-    cursor:pointer;
-    transition:background .15s ease;
+  button.login-btn{
+    width:100%;background:var(--ink);color:var(--paper);border:none;
+    padding:13px 20px;font-family:'Fraunces',serif;font-weight:600;font-size:16px;
+    border-radius:2px;cursor:pointer;margin-top:6px;transition:background .15s ease;
   }
-  button.primary{margin-left:auto;}
-  button.secondary{background:var(--brass);}
-  button.primary:hover:not(:disabled), button.secondary:hover:not(:disabled){background:var(--brass);}
-  button.primary:disabled{opacity:0.4;cursor:not-allowed;}
-  button.primary:focus-visible, button.secondary:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  button.login-btn:hover{background:var(--brass);}
+  button.login-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
 
-  #status{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
-    color:var(--ink-soft);
-    margin-top:10px;
-    min-height:16px;
+  #err{
+    color:var(--stamp-red);background:var(--stamp-red-bg);
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;
+    padding:9px 12px;border-radius:2px;margin-top:14px;display:none;text-align:center;
   }
-
-  #results{display:none;}
-  .turn-block{
-    background:var(--paper-raised);
-    border:1px solid var(--line);
-    margin-bottom:22px;
-    position:relative;
-    overflow:hidden;
+  .foot-note{
+    margin-top:22px;font-size:11px;color:var(--ink-soft);text-align:center;
+    font-family:'IBM Plex Mono',monospace;line-height:1.5;
   }
-  .turn-head{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:16px 22px;border-bottom:2px solid var(--brass-light);
-    flex-wrap:wrap;gap:8px;
-  }
-  .turn-head h2{
-    font-family:'Fraunces',serif;font-size:20px;margin:0;
-  }
-  .turn-head .device{
-    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);
-  }
-  .stamp{
-    font-family:'IBM Plex Mono',monospace;
-    font-weight:600;
-    font-size:12px;
-    letter-spacing:0.06em;
-    padding:5px 12px;
-    border:2px solid currentColor;
-    border-radius:3px;
-    transform:rotate(-3deg);
-    text-transform:uppercase;
-  }
-  .stamp.ok{color:var(--stamp-green);background:var(--stamp-green-bg);}
-  .stamp.bad{color:var(--stamp-red);background:var(--stamp-red-bg);}
-
-  table.ledger{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:13px;}
-  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .table-scroll::-webkit-scrollbar{height:8px;}
-  .table-scroll::-webkit-scrollbar-thumb{background:var(--brass-light);border-radius:4px;}
-  table.ledger th{
-    text-align:right;padding:9px 14px;font-size:10.5px;text-transform:uppercase;
-    letter-spacing:0.06em;color:var(--ink-soft);border-bottom:1px solid var(--line);
-    font-weight:500;
-  }
-  table.ledger th:first-child, table.ledger td:first-child{text-align:left;}
-  table.ledger td{padding:9px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
-  table.ledger tbody tr:last-child td{border-bottom:none;}
-  table.ledger tr.flagged td{background:var(--stamp-red-bg);}
-  table.ledger tr.flagged td:first-child{
-    box-shadow:inset 3px 0 0 var(--stamp-red);
-  }
-  .cur{font-weight:600;}
-
-  .sistemi-input, .op-input{
-    width:100px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12.5px;
-    text-align:right;
-    background:transparent;
-    border:1px solid var(--line);
-    border-radius:2px;
-    padding:5px 7px;
-    color:var(--ink);
-  }
-  .sistemi-input::placeholder, .op-input::placeholder{color:#b9b0a0;font-size:11px;}
-  .sistemi-input:focus, .op-input:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--focus);}
-  .diff-cell.cell-alert{color:var(--stamp-red);font-weight:600;}
-  td.needs-count{color:var(--stamp-red);font-style:italic;font-size:11.5px;}
-
-  .warnings{padding:16px 22px;border-top:1px solid var(--line);background:rgba(168,56,44,0.03);}
-  .warnings h4{
-    margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:11px;
-    text-transform:uppercase;letter-spacing:0.08em;color:var(--stamp-red);
-  }
-  .warnings ul{margin:0;padding-left:18px;font-size:13px;}
-  .warnings li{margin-bottom:4px;}
-
-  .empty-note{
-    text-align:center;color:var(--ink-soft);font-size:13px;padding:20px;
-    font-family:'IBM Plex Mono',monospace;
-  }
-
-  footer.legend{
-    margin-top:30px;font-size:12px;color:var(--ink-soft);
-    border-top:1px solid var(--line);padding-top:14px;
-  }
-
-  /* ---- Screen 2: Numërimi Fizik i Arkës ---- */
-  #screen-count{display:none;}
-  .turn-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;align-items:center;}
-  .turn-tab{
-    font-family:'IBM Plex Mono',monospace;font-size:13px;
-    padding:9px 18px;border:1px solid var(--line);background:var(--paper-raised);
-    border-radius:2px;cursor:pointer;color:var(--ink-soft);
-  }
-  .turn-tab.active{border-color:var(--brass);color:var(--ink);background:rgba(156,122,50,0.08);font-weight:600;}
-  .turn-tab.add{color:var(--brass);border-style:dashed;}
-
-  .currency-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
-  .currency-panel{
-    background:var(--paper-raised);border:1px solid var(--line);border-radius:2px;
-    padding:16px;
-  }
-  .currency-panel h4{
-    margin:0 0 10px;font-family:'Fraunces',serif;font-size:16px;
-    border-bottom:1px solid var(--line);padding-bottom:8px;
-    display:flex;justify-content:space-between;align-items:center;
-  }
-  .denom-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-  .denom-label{
-    flex:1;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);
-  }
-  .denom-cope{
-    width:56px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-align:right;
-    border:1px solid var(--line);border-radius:2px;padding:4px 6px;background:var(--paper);
-  }
-  .denom-cope:focus{outline:2px solid var(--focus);outline-offset:1px;}
-  .denom-vlera{
-    width:82px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);
-  }
-  .panel-total{
-    margin-top:10px;padding-top:10px;border-top:2px solid var(--brass-light);
-    display:flex;justify-content:space-between;font-weight:600;font-family:'IBM Plex Mono',monospace;
-  }
-  .extra-panel input.cur-code{
-    width:70px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-transform:uppercase;
-    border:1px solid var(--line);border-radius:2px;padding:4px 6px;background:var(--paper);
-  }
-  .extra-panel .add-row-btn{
-    margin-top:8px;background:none;border:1px dashed var(--brass-light);color:var(--brass);
-    font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:5px 10px;border-radius:2px;cursor:pointer;width:100%;
-  }
-  .extra-panel .denom-rm{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:13px;padding:0 4px;}
-  .extra-panel .denom-rm:hover{color:var(--stamp-red);}
 </style>
 </head>
 <body>
+  <form class="card" id="loginForm" autocomplete="off">
+    <div class="kicker">Zyrë Këmbimi Valutor</div>
+    <h1>Hyrje në Sistem</h1>
 
-<!-- ============ SCREEN 1: RAKORDIMI ============ -->
-<div class="wrap" id="screen-recon">
-
-  <header class="masthead">
-    <div>
-      <div class="kicker">Kontroll i Brendshëm · Zyrë Këmbimi Valutor</div>
-      <h1>Rakordimi i Arkës</h1>
+    <div class="field">
+      <label for="user">Kodi i Operatorit</label>
+      <input id="user" name="user" type="text" autocomplete="username" required>
     </div>
-    <div class="today" id="todayLabel"></div>
-  </header>
-
-  <section class="panel" data-step="Hapi 1 — Ngarko Bilancet">
-    <div class="drop-grid">
-      <div id="dzBilanci" class="dropzone" tabindex="0">
-        <h3>Bilancet e Këmbimeve</h3>
-        <p>Një skedar për çdo turn / pajisje fiskale. Kliko ose zvarrit këtu (mund të ngarkosh disa njëherësh).</p>
-        <input id="inpBilanci" type="file" accept=".xlsx" multiple>
-        <div class="file-list" id="listBilanci"></div>
-      </div>
+    <div class="field">
+      <label for="pass">Fjalëkalimi</label>
+      <input id="pass" name="pass" type="password" autocomplete="current-password" required>
     </div>
 
-    <div class="count-cta">
-      <div>
-        <h3>Numërimi Fizik i Arkës</h3>
-        <p>Numëro kartëmonedhat/monedhat për çdo turn — zëvendëson skedarin "Gjendje Arke".</p>
-      </div>
-      <button class="secondary" id="btnGoCount" type="button">Numërim Fizik →</button>
+    <button class="login-btn" type="submit">Hyr →</button>
+    <div id="err">Kodi ose fjalëkalimi janë gabim.</div>
+
+    <div class="foot-note">
+      Kontroll i brendshëm i qasjes — për ndryshim operatorësh/fjalëkalimesh,
+      redaktohet lista <code>OPERATORS</code> në fillim të skriptit të kësaj faqeje.
     </div>
-
-    <div class="controls-row">
-      <div class="field">
-        <label for="tolAll">Tolerancë ALL</label>
-        <input id="tolAll" type="number" value="5" step="0.5" min="0">
-      </div>
-      <div class="field">
-        <label for="tolFx">Tolerancë valutë</label>
-        <input id="tolFx" type="number" value="0.5" step="0.1" min="0">
-      </div>
-      <button class="primary" id="btnRun" disabled>Rakordo →</button>
-    </div>
-    <div id="status">Ngarko së paku një bilanc turni.</div>
-  </section>
-
-  <div id="results"></div>
-
-  <footer class="legend">
-    Rreshtat me shirit të kuq në të majtë tejkalojnë tolerancën e vendosur. "Rezultati i rikalkuluar" = Çelje Arke +
-    Blerje + Shitje (nga bilanci) − UFT Tërheqje + UFT Pagesa dhe Dërgesa + Sigupas-sig TPL. "Mbyllje Faktike" vjen nga
-    faqja e Numërimit Fizik. Të gjitha llogaritjet kryhen lokalisht në shfletues — asnjë skedar nuk ngarkohet në internet.
-  </footer>
-</div>
-
-<!-- ============ SCREEN 2: NUMËRIMI FIZIK I ARKËS ============ -->
-<div class="wrap" id="screen-count">
-  <header class="masthead">
-    <div>
-      <div class="kicker">Kontroll i Brendshëm · Zyrë Këmbimi Valutor</div>
-      <h1>Numërimi Fizik i Arkës</h1>
-    </div>
-    <button class="back-btn" id="btnGoRecon" type="button">← Kthehu te Rakordimi</button>
-  </header>
-
-  <div class="turn-tabs" id="turnTabs"></div>
-  <div id="currencyGrids"></div>
-
-  <div class="controls-row" style="justify-content:flex-end;border-top:none;margin-top:10px;">
-    <button class="primary" id="btnSaveCount" type="button">💾 Ruaj dhe kthehu te Rakordimi</button>
-  </div>
-</div>
+  </form>
 
 <script>
-document.getElementById('todayLabel').textContent = new Date().toLocaleDateString('sq-AL', {year:'numeric', month:'long', day:'numeric'});
+// ⚠️ Kjo ËSHTË vetëm një portë hyrjeje në shfletues — jo siguri e vërtetë.
+// Çdokush teknik mund të shohë kodin burimor dhe këto kredenciale. Për siguri
+// reale duhet një server/bazë të dhënash. Përshtat listën më poshtë:
+const OPERATORS = [
+  { user: 'admin',    pass: '1234', name: 'Administrator' },
+  { user: 'turni1',   pass: '1111', name: 'Operator Turni 1' },
+  { user: 'turni2',   pass: '2222', name: 'Operator Turni 2' },
+];
 
-const BILANCI_STATE = [];  // {file, name, meta, rows, turn, error}
+const form = document.getElementById('loginForm');
+const err = document.getElementById('err');
 
-const fmt = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '—' :
-  Number(v).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+// Nëse ka sesion aktiv, kalo direkt te rakordimi
+try {
+  const existing = JSON.parse(sessionStorage.getItem('raa_session') || 'null');
+  if (existing && existing.authed) window.location.href = 'rakordimi_arkes.html';
+} catch(e) {}
 
-function num(v){ return (v === null || v === undefined || v === '') ? 0 : Number(v); }
-
-// ---------- Parsing (Bilanci i Këmbimeve) ----------
-function parseBilanciWorkbook(wb){
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const raw = XLSX.utils.sheet_to_json(ws, {header:1, defval: null});
-  const meta = {
-    pajisje: raw[3] ? raw[3][1] : null,
-    nga: raw[5] ? raw[5][1] : null,
-    ne: raw[6] ? raw[6][1] : null,
-  };
-  const rows = [];
-  for (let i = 11; i < raw.length; i++) {
-    const r = raw[i];
-    if (!r) continue;
-    const numri = r[1];
-    if (typeof numri !== 'number') continue;
-    rows.push({
-      Numri: numri, Veprimi: r[2],
-      F_Monedha: r[3], F_Kursi: r[5],
-      A_Monedha: r[9], A_Shuma: num(r[10]), A_VleraALL: num(r[12]),
-      P_Monedha: r[14], P_Shuma: num(r[15]), P_VleraALL: num(r[17]),
-    });
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const u = document.getElementById('user').value.trim();
+  const p = document.getElementById('pass').value;
+  const match = OPERATORS.find(o => o.user === u && o.pass === p);
+  if (!match) {
+    err.style.display = 'block';
+    return;
   }
-  if (!rows.length) throw new Error('Nuk u gjetën rreshta veprimesh — a është ky formati "Bilanci i Këmbimeve"?');
-  return {meta, rows};
-}
-
-function aggregateBilanci(rows){
-  const blerje = rows.filter(r => r.Veprimi === 'Blerje');
-  const shitje = rows.filter(r => r.Veprimi === 'Shitje');
-  const out = { ALL: {
-    Blerje: -blerje.reduce((s,r)=>s + r.P_VleraALL, 0),
-    Shitje: shitje.reduce((s,r)=>s + r.A_VleraALL, 0),
-  }};
-  const currencies = new Set();
-  blerje.forEach(r => r.A_Monedha && currencies.add(r.A_Monedha));
-  shitje.forEach(r => r.P_Monedha && currencies.add(r.P_Monedha));
-  currencies.delete('ALL');
-  currencies.forEach(cur => {
-    const b = blerje.filter(r=>r.A_Monedha===cur).reduce((s,r)=>s+r.A_Shuma, 0);
-    const s = -shitje.filter(r=>r.P_Monedha===cur).reduce((s2,r)=>s2+r.P_Shuma, 0);
-    out[cur] = {Blerje: b, Shitje: s};
-  });
-  return out;
-}
-
-function checkInvoiceSequence(rows){
-  const numra = rows.map(r=>r.Numri);
-  const counts = {};
-  numra.forEach(n => counts[n] = (counts[n]||0)+1);
-  const dup = Object.keys(counts).filter(n => counts[n] > 1).map(Number).sort((a,b)=>a-b);
-  const unique = [...new Set(numra)].sort((a,b)=>a-b);
-  const gaps = [];
-  for (let i=0;i<unique.length-1;i++){
-    if (unique[i+1] - unique[i] > 1){
-      for (let g = unique[i]+1; g < unique[i+1]; g++) gaps.push(g);
-    }
-  }
-  return {gaps, dup};
-}
-
-function checkKursOutliers(rows, zThresh=2.5){
-  const groups = {};
-  rows.forEach(r => {
-    if (!r.F_Monedha || r.F_Monedha === 'ALL' || typeof r.F_Kursi !== 'number') return;
-    const key = r.F_Monedha + '|' + r.Veprimi;
-    (groups[key] = groups[key] || []).push(r);
-  });
-  const flagged = [];
-  Object.entries(groups).forEach(([key, grp]) => {
-    if (grp.length < 3) return;
-    const mean = grp.reduce((s,r)=>s+r.F_Kursi,0)/grp.length;
-    const variance = grp.reduce((s,r)=>s+(r.F_Kursi-mean)**2,0)/grp.length;
-    const std = Math.sqrt(variance);
-    if (!std) return;
-    grp.forEach(r => {
-      if (Math.abs(r.F_Kursi-mean)/std > zThresh){
-        flagged.push({numri:r.Numri, monedha:r.F_Monedha, veprimi:r.Veprimi, kursi:r.F_Kursi, mesatare: mean});
-      }
-    });
-  });
-  return flagged;
-}
-
-// ---------- UI: Bilanci dropzone ----------
-const dzBilanci = document.getElementById('dzBilanci');
-const inpBilanci = document.getElementById('inpBilanci');
-const listBilanci = document.getElementById('listBilanci');
-
-dzBilanci.addEventListener('click', () => inpBilanci.click());
-dzBilanci.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') inpBilanci.click(); });
-['dragover','dragenter'].forEach(ev => dzBilanci.addEventListener(ev, e => { e.preventDefault(); dzBilanci.classList.add('drag'); }));
-['dragleave','drop'].forEach(ev => dzBilanci.addEventListener(ev, e => { e.preventDefault(); dzBilanci.classList.remove('drag'); }));
-dzBilanci.addEventListener('drop', e => handleBilanciFiles(e.dataTransfer.files));
-inpBilanci.addEventListener('change', e => handleBilanciFiles(e.target.files));
-inpBilanci.addEventListener('click', e => e.stopPropagation());
-
-function handleBilanciFiles(fileList){
-  [...fileList].forEach(file => {
-    const entry = { file, name: file.name, meta:null, rows:null, turn: BILANCI_STATE.length+1, error:null };
-    BILANCI_STATE.push(entry);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try{
-        const wb = XLSX.read(e.target.result, {type:'array'});
-        const {meta, rows} = parseBilanciWorkbook(wb);
-        entry.meta = meta; entry.rows = rows;
-      } catch(err){
-        entry.error = err.message;
-      }
-      renderBilanciList();
-      updateRunState();
-    };
-    reader.readAsArrayBuffer(file);
-  });
-  renderBilanciList();
-}
-
-function renderBilanciList(){
-  listBilanci.innerHTML = '';
-  BILANCI_STATE.forEach((entry, idx) => {
-    const row = document.createElement('div');
-    row.className = 'file-row';
-    const label = entry.error ? `<span class="err">${entry.error}</span>` :
-      (entry.meta ? `<span class="meta">pajisje ${entry.meta.pajisje} · ${entry.meta.nga}</span>` : `<span class="meta">duke lexuar…</span>`);
-    row.innerHTML = `
-      <span class="name">${entry.name}</span>
-      ${label}
-      <select data-idx="${idx}" aria-label="Cakto turnin">
-        ${[1,2,3,4].map(n=>`<option value="${n}" ${entry.turn===n?'selected':''}>Turni ${n}</option>`).join('')}
-      </select>
-      <button class="rm" data-rm="${idx}" aria-label="Hiq skedarin">✕</button>`;
-    listBilanci.appendChild(row);
-  });
-  listBilanci.querySelectorAll('select').forEach(sel => {
-    sel.addEventListener('change', e => {
-      BILANCI_STATE[+e.target.dataset.idx].turn = +e.target.value;
-    });
-  });
-  listBilanci.querySelectorAll('[data-rm]').forEach(btn => {
-    btn.addEventListener('click', e => {
-      BILANCI_STATE.splice(+e.target.dataset.rm, 1);
-      renderBilanciList();
-      updateRunState();
-    });
-  });
-}
-
-function updateRunState(){
-  const ready = BILANCI_STATE.some(b=>b.rows);
-  document.getElementById('btnRun').disabled = !ready;
-  const status = document.getElementById('status');
-  status.textContent = ready
-    ? `Gati: ${BILANCI_STATE.filter(b=>b.rows).length} bilanc(e) turni. Kliko "Rakordo" për të vazhduar.`
-    : 'Ngarko së paku një bilanc turni.';
-}
-
-// ==================================================================
-// SCREEN NAVIGATION
-// ==================================================================
-document.getElementById('btnGoCount').addEventListener('click', () => showScreen('count'));
-document.getElementById('btnGoRecon').addEventListener('click', () => showScreen('recon'));
-document.getElementById('btnSaveCount').addEventListener('click', () => {
-  showScreen('recon');
-  if (document.getElementById('results').style.display === 'block') runReconciliation();
+  err.style.display = 'none';
+  try {
+    sessionStorage.setItem('raa_session', JSON.stringify({ authed: true, user: match.user, name: match.name }));
+  } catch(e) {}
+  window.location.href = 'rakordimi_arkes.html';
 });
-
-function showScreen(name){
-  document.getElementById('screen-recon').style.display = name === 'recon' ? 'block' : 'none';
-  document.getElementById('screen-count').style.display = name === 'count' ? 'block' : 'none';
-  if (name === 'count') renderCountScreen();
-  window.scrollTo(0,0);
-}
-
-// ==================================================================
-// SCREEN 2: NUMËRIMI FIZIK I ARKËS (prerje kartëmonedhash/monedhash)
-// ==================================================================
-const DENOMINATIONS = {
-  ALL: [10000,5000,2000,1000,500,200,100,50,20,10,5],
-  EUR: [500,200,100,50,20,10,5,2,1,0.50,0.20,0.10],
-  USD: [100,50,20,10,5,2,1],
-  GBP: [50,20,10,5,2,1],
-  CHF: [1000,200,100,50,20,10],
-  CAD: [100,50,20,10],
-  AUD: [100,50,20,10,5],
-  SEK: [1000,500,200,100,50,20],
-  NOK: [1000,500,200,100,50],
-  TRY: [200,100,50,20,10,5],
-  MKD: [2000,1000,500,200,100,50,10],
-};
-
-let COUNT_TURNS = ['Turni 1', 'Turni 2'];
-let ACTIVE_COUNT_TURN = 'Turni 1';
-const CASH_COUNT = {};
-
-function ensureTurnCount(turn){
-  if (!CASH_COUNT[turn]) {
-    CASH_COUNT[turn] = {};
-    Object.keys(DENOMINATIONS).forEach(cur => {
-      CASH_COUNT[turn][cur] = { cope: {}, total: 0 };
-    });
-    CASH_COUNT[turn].EXTRA = { code: '', denoms: [], cope: {}, total: 0 };
-  }
-}
-
-function renderCountScreen(){
-  ensureTurnCount(ACTIVE_COUNT_TURN);
-  renderTurnTabs();
-  renderCurrencyGrids();
-}
-
-function renderTurnTabs(){
-  const tabs = document.getElementById('turnTabs');
-  tabs.innerHTML = COUNT_TURNS.map(t =>
-    `<button type="button" class="turn-tab ${t===ACTIVE_COUNT_TURN?'active':''}" data-turn="${t}">${t}</button>`
-  ).join('') + `<button type="button" class="turn-tab add" id="btnAddTurn">+ Shto Turn</button>`;
-
-  tabs.querySelectorAll('.turn-tab[data-turn]').forEach(btn => {
-    btn.addEventListener('click', () => { ACTIVE_COUNT_TURN = btn.dataset.turn; renderCountScreen(); });
-  });
-  document.getElementById('btnAddTurn').addEventListener('click', () => {
-    const n = COUNT_TURNS.length + 1;
-    const label = `Turni ${n}`;
-    COUNT_TURNS.push(label);
-    ACTIVE_COUNT_TURN = label;
-    renderCountScreen();
-  });
-}
-
-function denomLabel(cur, val){
-  return `${val.toLocaleString('en-US')} ${cur}`;
-}
-
-function renderCurrencyGrids(){
-  ensureTurnCount(ACTIVE_COUNT_TURN);
-  const grid = document.getElementById('currencyGrids');
-  const turnData = CASH_COUNT[ACTIVE_COUNT_TURN];
-
-  const panels = Object.keys(DENOMINATIONS).map(cur => {
-    const denoms = DENOMINATIONS[cur];
-    const rows = denoms.map(val => `
-      <div class="denom-row">
-        <span class="denom-label">${denomLabel(cur, val)}</span>
-        <input type="number" min="0" step="1" class="denom-cope" data-cur="${cur}" data-val="${val}" placeholder="0">
-        <span class="denom-vlera" data-vlera-for="${cur}:${val}">0.00</span>
-      </div>`).join('');
-    return `
-      <div class="currency-panel" data-panel="${cur}">
-        <h4>${cur}</h4>
-        ${rows}
-        <div class="panel-total"><span>Totali</span><span data-total-for="${cur}">0.00 ${cur}</span></div>
-      </div>`;
-  }).join('');
-
-  const extra = turnData.EXTRA;
-  const extraRows = extra.denoms.map((val,i) => `
-      <div class="denom-row">
-        <span class="denom-label">${val}</span>
-        <input type="number" min="0" step="1" class="denom-cope" data-cur="EXTRA" data-val="${val}" placeholder="0">
-        <span class="denom-vlera" data-vlera-for="EXTRA:${val}">0.00</span>
-        <button type="button" class="denom-rm" data-rm-extra="${i}">✕</button>
-      </div>`).join('');
-
-  const extraPanel = `
-    <div class="currency-panel extra-panel" data-panel="EXTRA">
-      <h4><input type="text" class="cur-code" id="extraCode" placeholder="KOD" value="${extra.code||''}" maxlength="6"></h4>
-      <div id="extraRowsHost">${extraRows}</div>
-      <input type="number" class="denom-cope" id="newDenomVal" placeholder="Vlerë e re" style="width:100%;margin-top:6px;">
-      <button type="button" class="add-row-btn" id="btnAddDenom">+ Shto Prerje</button>
-      <div class="panel-total"><span>Totali</span><span data-total-for="EXTRA">0.00 ${extra.code||''}</span></div>
-    </div>`;
-
-  grid.innerHTML = `<div class="currency-grid">${panels}${extraPanel}</div>`;
-
-  grid.querySelectorAll('.denom-cope[data-cur]').forEach(inp => {
-    const cur = inp.dataset.cur, val = inp.dataset.val;
-    const saved = turnData[cur] && turnData[cur].cope[val];
-    if (saved) inp.value = saved;
-    inp.addEventListener('input', onDenomInput);
-  });
-
-  document.getElementById('extraCode').addEventListener('input', e => {
-    turnData.EXTRA.code = e.target.value.toUpperCase();
-    recomputePanel('EXTRA');
-  });
-  document.getElementById('btnAddDenom').addEventListener('click', () => {
-    const v = Number(document.getElementById('newDenomVal').value);
-    if (!v || v <= 0) return;
-    turnData.EXTRA.denoms.push(v);
-    turnData.EXTRA.denoms.sort((a,b)=>b-a);
-    renderCurrencyGrids();
-  });
-  grid.querySelectorAll('[data-rm-extra]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const i = Number(btn.dataset.rmExtra);
-      const removedVal = turnData.EXTRA.denoms[i];
-      delete turnData.EXTRA.cope[removedVal];
-      turnData.EXTRA.denoms.splice(i,1);
-      renderCurrencyGrids();
-    });
-  });
-
-  Object.keys(DENOMINATIONS).forEach(recomputePanel);
-  recomputePanel('EXTRA');
-}
-
-function onDenomInput(e){
-  const inp = e.target;
-  const cur = inp.dataset.cur, val = inp.dataset.val;
-  const turnData = CASH_COUNT[ACTIVE_COUNT_TURN];
-  const cope = Number(inp.value) || 0;
-  turnData[cur].cope[val] = cope;
-  const vlera = cope * Number(val);
-  const vCell = document.querySelector(`[data-vlera-for="${cur}:${val}"]`);
-  if (vCell) vCell.textContent = fmt(vlera);
-  recomputePanel(cur);
-}
-
-function recomputePanel(cur){
-  const turnData = CASH_COUNT[ACTIVE_COUNT_TURN];
-  const data = turnData[cur];
-  const denoms = cur === 'EXTRA' ? data.denoms : DENOMINATIONS[cur];
-  let total = 0;
-  denoms.forEach(val => { total += (data.cope[val] || 0) * Number(val); });
-  data.total = total;
-  const totalCell = document.querySelector(`[data-total-for="${cur}"]`);
-  if (totalCell) totalCell.textContent = `${fmt(total)} ${cur === 'EXTRA' ? (data.code||'') : cur}`;
-}
-
-function getMbylljeFaktike(turnLabel, currency){
-  const t = CASH_COUNT[turnLabel];
-  if (!t) return null;
-  if (t[currency]) return t[currency].total;
-  if (t.EXTRA && t.EXTRA.code === currency) return t.EXTRA.total;
-  return null;
-}
-
-// ==================================================================
-// Reconciliation + render
-// ==================================================================
-document.getElementById('btnRun').addEventListener('click', runReconciliation);
-
-function runReconciliation(){
-  const tolAll = Number(document.getElementById('tolAll').value) || 0;
-  const tolFx = Number(document.getElementById('tolFx').value) || 0;
-  const results = document.getElementById('results');
-  results.innerHTML = '';
-  results.style.display = 'block';
-
-  const validBilanci = BILANCI_STATE.filter(b => b.rows && !b.error).sort((a,b)=>a.turn-b.turn);
-
-  validBilanci.forEach(entry => {
-    const turnLabel = `Turni ${entry.turn}`;
-    const agg = aggregateBilanci(entry.rows);
-
-    const block = document.createElement('div');
-    block.className = 'turn-block';
-
-    let anyFlag = false;
-    const tableRows = [];
-
-    Object.keys(agg).forEach(cur => {
-      const eff = agg[cur];
-      const tol = cur === 'ALL' ? tolAll : tolFx;
-      const mbylljeFaktike = getMbylljeFaktike(turnLabel, cur);
-      const arkaCelje = 0; // fillimisht 0 — plotësohet manualisht nga operatori
-      const base = arkaCelje + eff.Blerje + eff.Shitje;
-      const rezultat = base;
-      const diferenca = (mbylljeFaktike === null) ? null : (rezultat - mbylljeFaktike);
-      const mismatchDiff = diferenca !== null && Math.abs(diferenca) > tol;
-      if (mismatchDiff) anyFlag = true;
-      tableRows.push({
-        rowId: `${entry.turn}__${cur}`, Monedha: cur,
-        ArkaCelje: arkaCelje, base, effBlerje: eff.Blerje, effShitje: eff.Shitje,
-        MbylljeFaktike: mbylljeFaktike, rezultat, diferenca, mismatchDiff, flagged: mismatchDiff,
-      });
-    });
-
-    const rowsHtml = tableRows.map(r => `
-      <tr class="${r.flagged?'flagged':''}">
-        <td class="cur">${r.Monedha}</td>
-        <td><input type="number" step="0.01" class="arka-celje-input op-input" data-row-id="${r.rowId}" aria-label="Çelje Arke për ${r.Monedha}" placeholder="0.00"></td>
-        <td>${fmt(r.effBlerje)}</td>
-        <td>${fmt(r.effShitje)}</td>
-        <td><input type="number" step="0.01" class="uft-terheqje-input op-input" data-row-id="${r.rowId}" aria-label="UFT Tërheqje për ${r.Monedha}" placeholder="0.00"></td>
-        <td><input type="number" step="0.01" class="uft-pagesa-input op-input" data-row-id="${r.rowId}" aria-label="UFT Pagesa dhe Dërgesa për ${r.Monedha}" placeholder="0.00"></td>
-        <td><input type="number" step="0.01" class="sigupas-input op-input" data-row-id="${r.rowId}" aria-label="Sigupas-sig TPL për ${r.Monedha}" placeholder="0.00"></td>
-        <td class="rezultat-cell" data-rezultat-for="${r.rowId}">${fmt(r.rezultat)}</td>
-        <td ${r.MbylljeFaktike===null?'class="needs-count"':''}>${r.MbylljeFaktike===null ? 'pa numëruar' : fmt(r.MbylljeFaktike)}</td>
-        <td><input type="number" step="0.01" class="sistemi-input" data-row-id="${r.rowId}" aria-label="Gjendje sipas sistemit për ${r.Monedha}" placeholder="fut manualisht"></td>
-        <td class="diff-cell" data-diff-for="${r.rowId}">—</td>
-        <td class="diff-cell" data-diff3-for="${r.rowId}">${r.diferenca===null?'—':fmt(r.diferenca)}</td>
-      </tr>`).join('');
-
-    const seq = checkInvoiceSequence(entry.rows);
-    const kurs = checkKursOutliers(entry.rows);
-    const hasWarnings = seq.gaps.length || seq.dup.length || kurs.length;
-
-    block.innerHTML = `
-      <div class="turn-head">
-        <div>
-          <h2>${turnLabel}</h2>
-          <div class="device">Pajisje fiskale: ${entry.meta.pajisje} · ${entry.meta.nga}</div>
-        </div>
-        <div class="stamp ${anyFlag?'bad':'ok'}">${anyFlag ? 'Për kontroll' : 'Balancuar'}</div>
-      </div>
-      <div class="table-scroll">
-      <table class="ledger">
-        <thead><tr>
-          <th>Monedha</th><th>Çelje Arke</th><th>Blerje (bilanc)</th><th>Shitje (bilanc)</th>
-          <th>UFT Tërheqje</th><th>UFT Pagesa dhe Dërgesa</th><th>Sigupas-sig TPL</th>
-          <th>Rezultat i rikalkuluar</th><th>Mbyllje faktike</th><th>Gjendje sipas Sistemit</th>
-          <th>Diferenca (Faktike − Sistemi)</th><th>Diferenca (Rezultat − Faktike)</th>
-        </tr></thead>
-        <tbody>${rowsHtml}</tbody>
-      </table>
-      </div>
-      ${hasWarnings ? `<div class="warnings">
-        <h4>Kontrolle shtesë</h4>
-        <ul>
-          ${seq.gaps.length ? `<li>Fatura që mungojnë: ${seq.gaps.join(', ')}</li>` : ''}
-          ${seq.dup.length ? `<li>Fatura të dublikuara: ${seq.dup.join(', ')}</li>` : ''}
-          ${kurs.map(k=>`<li>Kurs jashtë normës — fatura ${k.numri} (${k.monedha}, ${k.veprimi}): ${k.kursi} vs mesatare ${k.mesatare.toFixed(4)}</li>`).join('')}
-        </ul>
-      </div>` : ''}
-    `;
-    results.appendChild(block);
-    wireManualInputs(block, tableRows, tolAll, tolFx, MARZHI_MANUAL);
-  });
-
-  if (!validBilanci.length){
-    results.innerHTML = '<div class="empty-note">Asnjë bilanc i lexueshëm.</div>';
-  }
-}
-
-const MARZHI_MANUAL = 0.5; // marzhi i gabimit: 0.5 (ALL ose monedhë e huaj)
-
-function wireManualInputs(block, tableRows, tolAll, tolFx, marzhi){
-  const findRow = (rid) => tableRows.find(row => row.rowId === rid);
-
-  function refreshSistemi(rid){
-    const r = findRow(rid);
-    const inp = block.querySelector(`.sistemi-input[data-row-id="${CSS.escape(rid)}"]`);
-    const diffCell = block.querySelector(`[data-diff-for="${CSS.escape(rid)}"]`);
-    const val = inp.value.trim() === '' ? null : Number(inp.value);
-    let manualDiff = null, manualFlag = false;
-    if (val !== null && !Number.isNaN(val) && r.MbylljeFaktike !== null){
-      manualDiff = r.MbylljeFaktike - val;
-      manualFlag = Math.abs(manualDiff) > marzhi;
-    }
-    diffCell.textContent = manualDiff === null ? '—' : fmt(manualDiff);
-    diffCell.classList.toggle('cell-alert', manualFlag);
-    r.sysFlag = manualFlag;
-    applyRowFlag(rid);
-  }
-
-  function refreshRezultat(rid){
-    const r = findRow(rid);
-    const tol = r.Monedha === 'ALL' ? tolAll : tolFx;
-    const arkaCelje = readNum(block, '.arka-celje-input', rid);
-    const uftT = readNum(block, '.uft-terheqje-input', rid);
-    const uftP = readNum(block, '.uft-pagesa-input', rid);
-    const sig = readNum(block, '.sigupas-input', rid);
-    const rezultat = arkaCelje + r.effBlerje + r.effShitje - uftT + uftP + sig;
-    const diferenca = (r.MbylljeFaktike === null) ? null : (rezultat - r.MbylljeFaktike);
-    const mismatchDiff = diferenca !== null && Math.abs(diferenca) > tol;
-
-    const rezCell = block.querySelector(`[data-rezultat-for="${CSS.escape(rid)}"]`);
-    const diff3Cell = block.querySelector(`[data-diff3-for="${CSS.escape(rid)}"]`);
-    rezCell.textContent = fmt(rezultat);
-    diff3Cell.textContent = diferenca === null ? '—' : fmt(diferenca);
-    diff3Cell.classList.toggle('cell-alert', mismatchDiff);
-
-    r.ArkaCelje = arkaCelje; r.rezultat = rezultat; r.diferenca = diferenca; r.mismatchDiff = mismatchDiff;
-    applyRowFlag(rid);
-  }
-
-  function applyRowFlag(rid){
-    const r = findRow(rid);
-    const tr = block.querySelector(`.sistemi-input[data-row-id="${CSS.escape(rid)}"]`).closest('tr');
-    const flagged = r.mismatchDiff || !!r.sysFlag;
-    tr.classList.toggle('flagged', flagged);
-    updateStamp(block);
-  }
-
-  block.querySelectorAll('.sistemi-input').forEach(inp => {
-    inp.addEventListener('input', () => refreshSistemi(inp.dataset.rowId));
-  });
-  block.querySelectorAll('.op-input').forEach(inp => {
-    inp.addEventListener('input', () => refreshRezultat(inp.dataset.rowId));
-  });
-}
-
-function readNum(block, selector, rid){
-  const inp = block.querySelector(`${selector}[data-row-id="${CSS.escape(rid)}"]`);
-  const v = inp.value.trim();
-  return v === '' ? 0 : (Number.isNaN(Number(v)) ? 0 : Number(v));
-}
-
-function updateStamp(block){
-  const anyFlag = !!block.querySelector('table.ledger tbody tr.flagged');
-  const stamp = block.querySelector('.stamp');
-  stamp.textContent = anyFlag ? 'Për kontroll' : 'Balancuar';
-  stamp.classList.toggle('bad', anyFlag);
-  stamp.classList.toggle('ok', !anyFlag);
-}
 </script>
 </body>
 </html>
