@@ -378,12 +378,18 @@
     <div id="status">Ngarko së paku një bilanc turni.</div>
   </section>
 
+  <div id="exportBar" style="display:none;justify-content:flex-end;margin-bottom:14px;">
+    <button class="secondary" id="btnExport" type="button">⬇ Shkarko si Excel</button>
+  </div>
   <div id="results"></div>
 
   <footer class="legend">
     Rreshtat me shirit të kuq në të majtë tejkalojnë tolerancën e vendosur. "Rezultati i rikalkuluar" = Çelje Arke +
     Blerje + Shitje (nga bilanci) − UFT Tërheqje + UFT Pagesa dhe Dërgesa + Sigupas-sig TPL. "Mbyllje Faktike" vjen nga
     faqja e Numërimit Fizik. Të gjitha llogaritjet kryhen lokalisht në shfletues — asnjë skedar nuk ngarkohet në internet.
+    Të dhënat e futura manualisht (Çelje Arke, UFT, Sigupas, Gjendje sipas Sistemit, numërimi fizik) ruhen automatikisht
+    në këtë kompjuter dhe rikthehen edhe pas rifreskimit të faqes — deri në fund të ditës.
+    <button id="btnClearSaved" type="button" style="margin-left:8px;background:none;border:none;color:var(--stamp-red);text-decoration:underline;cursor:pointer;font-family:inherit;font-size:inherit;">Pastro të dhënat e sotme</button>
   </footer>
 </div>
 
@@ -407,16 +413,16 @@
 
 <script>
 // ---------- Kontroll hyrjeje (front-end, jo siguri e vërtetë) ----------
+let CURRENT_SESSION = null;
 (function authGuard(){
-  let session = null;
-  try { session = JSON.parse(sessionStorage.getItem('raa_session') || 'null'); } catch(e){}
-  if (!session || !session.authed) {
+  try { CURRENT_SESSION = JSON.parse(sessionStorage.getItem('raa_session') || 'null'); } catch(e){}
+  if (!CURRENT_SESSION || !CURRENT_SESSION.authed) {
     window.location.href = 'index.html';
     return;
   }
   window.addEventListener('DOMContentLoaded', () => {
     const lbl = document.getElementById('operatorLabel');
-    if (lbl) lbl.textContent = `Operator: ${session.name || session.user}`;
+    if (lbl) lbl.textContent = `Operator: ${CURRENT_SESSION.name || CURRENT_SESSION.user}`;
   });
 })();
 
@@ -425,11 +431,19 @@ document.getElementById('btnLogout') && document.getElementById('btnLogout').add
   try { sessionStorage.removeItem('raa_session'); } catch(e){}
   window.location.href = 'index.html';
 });
+document.getElementById('btnClearSaved') && document.getElementById('btnClearSaved').addEventListener('click', () => {
+  if (!confirm('Të fshihen të gjitha të dhënat e futura manualisht sot (Çelje Arke, UFT, Sigupas, numërimi fizik)? Ky veprim s\'kthehet mbrapsht.')) return;
+  try {
+    localStorage.removeItem(CASHCOUNT_KEY);
+    localStorage.removeItem(MANUAL_KEY);
+  } catch(e){}
+  window.location.reload();
+});
 
 const BILANCI_STATE = [];  // {file, name, meta, rows, turn, error}
 
 const fmt = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '—' :
-  Number(v).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  Number(v).toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
 
 function num(v){ return (v === null || v === undefined || v === '') ? 0 : Number(v); }
 
@@ -623,9 +637,38 @@ const DENOMINATIONS = {
   MKD: [2000,1000,500,200,100,50,10],
 };
 
+// ---------- Ruajtje automatike (localStorage, e ndarë sipas ditës) ----------
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+function loadPersisted(key, fallback){
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
+}
+function savePersisted(key, value){
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch(e){}
+}
+const CASHCOUNT_KEY = 'raa_cashcount_' + todayKey();
+const MANUAL_KEY = 'raa_manual_' + todayKey();
+
 let COUNT_TURNS = ['Turni 1', 'Turni 2'];
 let ACTIVE_COUNT_TURN = 'Turni 1';
 const CASH_COUNT = {};
+const MANUAL_FIELDS = loadPersisted(MANUAL_KEY, {}); // { rowId: {arkaCelje,uftT,uftP,sig,sistemi} }
+
+(function restoreCashCount(){
+  const saved = loadPersisted(CASHCOUNT_KEY, null);
+  if (saved && saved.turns && saved.data) {
+    COUNT_TURNS = saved.turns;
+    Object.assign(CASH_COUNT, saved.data);
+    ACTIVE_COUNT_TURN = COUNT_TURNS[0];
+  }
+})();
+
+function persistCashCount(){
+  savePersisted(CASHCOUNT_KEY, { turns: COUNT_TURNS, data: CASH_COUNT });
+}
+function persistManualField(rowId, patch){
+  MANUAL_FIELDS[rowId] = Object.assign({}, MANUAL_FIELDS[rowId], patch);
+  savePersisted(MANUAL_KEY, MANUAL_FIELDS);
+}
 
 function ensureTurnCount(turn){
   if (!CASH_COUNT[turn]) {
@@ -633,8 +676,15 @@ function ensureTurnCount(turn){
     Object.keys(DENOMINATIONS).forEach(cur => {
       CASH_COUNT[turn][cur] = { cope: {}, total: 0 };
     });
-    CASH_COUNT[turn].EXTRA = { code: '', denoms: [], cope: {}, total: 0 };
+    CASH_COUNT[turn].EXTRAS = []; // { id, code, denoms:[], cope:{}, total }
+    CASH_COUNT[turn].nextExtraId = 1;
   }
+  if (!CASH_COUNT[turn].EXTRAS) CASH_COUNT[turn].EXTRAS = [];
+  if (!CASH_COUNT[turn].nextExtraId) CASH_COUNT[turn].nextExtraId = 1;
+}
+
+function getExtra(turnData, id){
+  return turnData.EXTRAS.find(x => x.id === id);
 }
 
 function renderCountScreen(){
@@ -657,12 +707,14 @@ function renderTurnTabs(){
     const label = `Turni ${n}`;
     COUNT_TURNS.push(label);
     ACTIVE_COUNT_TURN = label;
+    ensureTurnCount(label);
+    persistCashCount();
     renderCountScreen();
   });
 }
 
 function denomLabel(cur, val){
-  return `${val.toLocaleString('en-US')} ${cur}`;
+  return `${val.toLocaleString('de-DE')} ${cur}`;
 }
 
 function renderCurrencyGrids(){
@@ -676,66 +728,107 @@ function renderCurrencyGrids(){
       <div class="denom-row">
         <span class="denom-label">${denomLabel(cur, val)}</span>
         <input type="number" min="0" step="1" class="denom-cope" data-cur="${cur}" data-val="${val}" placeholder="0">
-        <span class="denom-vlera" data-vlera-for="${cur}:${val}">0.00</span>
+        <span class="denom-vlera" data-vlera-for="${cur}:${val}">0,00</span>
       </div>`).join('');
     return `
       <div class="currency-panel" data-panel="${cur}">
         <h4>${cur}</h4>
         ${rows}
-        <div class="panel-total"><span>Totali</span><span data-total-for="${cur}">0.00 ${cur}</span></div>
+        <div class="panel-total"><span>Totali</span><span data-total-for="${cur}">0,00 ${cur}</span></div>
       </div>`;
   }).join('');
 
-  const extra = turnData.EXTRA;
-  const extraRows = extra.denoms.map((val,i) => `
+  const extraPanels = turnData.EXTRAS.map(extra => {
+    const key = 'EXTRA_' + extra.id;
+    const extraRows = extra.denoms.map((val,i) => `
       <div class="denom-row">
-        <span class="denom-label">${val}</span>
-        <input type="number" min="0" step="1" class="denom-cope" data-cur="EXTRA" data-val="${val}" placeholder="0">
-        <span class="denom-vlera" data-vlera-for="EXTRA:${val}">0.00</span>
-        <button type="button" class="denom-rm" data-rm-extra="${i}">✕</button>
+        <span class="denom-label">${val.toLocaleString('de-DE')}</span>
+        <input type="number" min="0" step="1" class="denom-cope" data-cur="${key}" data-val="${val}" placeholder="0">
+        <span class="denom-vlera" data-vlera-for="${key}:${val}">0,00</span>
+        <button type="button" class="denom-rm" data-rm-extra="${extra.id}:${i}">✕</button>
       </div>`).join('');
+    return `
+      <div class="currency-panel extra-panel" data-panel="${key}">
+        <h4>
+          <input type="text" class="cur-code" data-extra-code="${extra.id}" placeholder="KOD" value="${extra.code||''}" maxlength="6">
+          <button type="button" class="denom-rm" data-rm-currency="${extra.id}" title="Hiq monedhën">✕</button>
+        </h4>
+        <div>${extraRows}</div>
+        <input type="number" class="denom-cope" data-new-denom="${extra.id}" placeholder="Vlerë e re" style="width:100%;margin-top:6px;">
+        <button type="button" class="add-row-btn" data-add-denom="${extra.id}">+ Shto Prerje</button>
+        <div class="panel-total"><span>Totali</span><span data-total-for="${key}">0,00 ${extra.code||''}</span></div>
+      </div>`;
+  }).join('');
 
-  const extraPanel = `
-    <div class="currency-panel extra-panel" data-panel="EXTRA">
-      <h4><input type="text" class="cur-code" id="extraCode" placeholder="KOD" value="${extra.code||''}" maxlength="6"></h4>
-      <div id="extraRowsHost">${extraRows}</div>
-      <input type="number" class="denom-cope" id="newDenomVal" placeholder="Vlerë e re" style="width:100%;margin-top:6px;">
-      <button type="button" class="add-row-btn" id="btnAddDenom">+ Shto Prerje</button>
-      <div class="panel-total"><span>Totali</span><span data-total-for="EXTRA">0.00 ${extra.code||''}</span></div>
+  const addCurrencyTile = `
+    <div class="currency-panel extra-panel" style="display:flex;align-items:center;justify-content:center;">
+      <button type="button" class="add-row-btn" id="btnAddCurrency" style="border:1px dashed var(--brass-light);">+ Shto Monedhë</button>
     </div>`;
 
-  grid.innerHTML = `<div class="currency-grid">${panels}${extraPanel}</div>`;
+  grid.innerHTML = `<div class="currency-grid">${panels}${extraPanels}${addCurrencyTile}</div>`;
 
   grid.querySelectorAll('.denom-cope[data-cur]').forEach(inp => {
     const cur = inp.dataset.cur, val = inp.dataset.val;
-    const saved = turnData[cur] && turnData[cur].cope[val];
+    const dataObj = cur.startsWith('EXTRA_') ? getExtra(turnData, Number(cur.split('_')[1])) : turnData[cur];
+    const saved = dataObj && dataObj.cope[val];
     if (saved) inp.value = saved;
     inp.addEventListener('input', onDenomInput);
   });
 
-  document.getElementById('extraCode').addEventListener('input', e => {
-    turnData.EXTRA.code = e.target.value.toUpperCase();
-    recomputePanel('EXTRA');
+  grid.querySelectorAll('[data-extra-code]').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const extra = getExtra(turnData, Number(e.target.dataset.extraCode));
+      extra.code = e.target.value.toUpperCase();
+      recomputePanel('EXTRA_' + extra.id);
+      persistCashCount();
+    });
   });
-  document.getElementById('btnAddDenom').addEventListener('click', () => {
-    const v = Number(document.getElementById('newDenomVal').value);
-    if (!v || v <= 0) return;
-    turnData.EXTRA.denoms.push(v);
-    turnData.EXTRA.denoms.sort((a,b)=>b-a);
+
+  document.getElementById('btnAddCurrency').addEventListener('click', () => {
+    const id = turnData.nextExtraId++;
+    turnData.EXTRAS.push({ id, code: '', denoms: [], cope: {}, total: 0 });
+    persistCashCount();
     renderCurrencyGrids();
   });
+
+  grid.querySelectorAll('[data-add-denom]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.addDenom);
+      const extra = getExtra(turnData, id);
+      const input = grid.querySelector(`[data-new-denom="${id}"]`);
+      const v = Number(input.value);
+      if (!v || v <= 0) return;
+      extra.denoms.push(v);
+      extra.denoms.sort((a,b)=>b-a);
+      persistCashCount();
+      renderCurrencyGrids();
+    });
+  });
+
   grid.querySelectorAll('[data-rm-extra]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const i = Number(btn.dataset.rmExtra);
-      const removedVal = turnData.EXTRA.denoms[i];
-      delete turnData.EXTRA.cope[removedVal];
-      turnData.EXTRA.denoms.splice(i,1);
+      const [idStr, iStr] = btn.dataset.rmExtra.split(':');
+      const extra = getExtra(turnData, Number(idStr));
+      const removedVal = extra.denoms[Number(iStr)];
+      delete extra.cope[removedVal];
+      extra.denoms.splice(Number(iStr),1);
+      persistCashCount();
+      renderCurrencyGrids();
+    });
+  });
+
+  grid.querySelectorAll('[data-rm-currency]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.rmCurrency);
+      if (!confirm('Të hiqet kjo monedhë shtesë dhe të gjitha të dhënat e saj?')) return;
+      turnData.EXTRAS = turnData.EXTRAS.filter(x => x.id !== id);
+      persistCashCount();
       renderCurrencyGrids();
     });
   });
 
   Object.keys(DENOMINATIONS).forEach(recomputePanel);
-  recomputePanel('EXTRA');
+  turnData.EXTRAS.forEach(extra => recomputePanel('EXTRA_' + extra.id));
 }
 
 function onDenomInput(e){
@@ -745,29 +838,33 @@ function onDenomInput(e){
   inp.value = cope === 0 && inp.value === '' ? '' : cope;
   const cur = inp.dataset.cur, val = inp.dataset.val;
   const turnData = CASH_COUNT[ACTIVE_COUNT_TURN];
-  turnData[cur].cope[val] = cope;
+  const dataObj = cur.startsWith('EXTRA_') ? getExtra(turnData, Number(cur.split('_')[1])) : turnData[cur];
+  dataObj.cope[val] = cope;
   const vlera = cope * Number(val);
   const vCell = document.querySelector(`[data-vlera-for="${cur}:${val}"]`);
   if (vCell) vCell.textContent = fmt(vlera);
   recomputePanel(cur);
+  persistCashCount();
 }
 
 function recomputePanel(cur){
   const turnData = CASH_COUNT[ACTIVE_COUNT_TURN];
-  const data = turnData[cur];
-  const denoms = cur === 'EXTRA' ? data.denoms : DENOMINATIONS[cur];
+  const data = cur.startsWith('EXTRA_') ? getExtra(turnData, Number(cur.split('_')[1])) : turnData[cur];
+  if (!data) return;
+  const denoms = cur.startsWith('EXTRA_') ? data.denoms : DENOMINATIONS[cur];
   let total = 0;
   denoms.forEach(val => { total += (data.cope[val] || 0) * Number(val); });
   data.total = total;
   const totalCell = document.querySelector(`[data-total-for="${cur}"]`);
-  if (totalCell) totalCell.textContent = `${fmt(total)} ${cur === 'EXTRA' ? (data.code||'') : cur}`;
+  if (totalCell) totalCell.textContent = `${fmt(total)} ${cur.startsWith('EXTRA_') ? (data.code||'') : cur}`;
 }
 
 function getMbylljeFaktike(turnLabel, currency){
   const t = CASH_COUNT[turnLabel];
   if (!t) return null;
   if (t[currency]) return t[currency].total;
-  if (t.EXTRA && t.EXTRA.code === currency) return t.EXTRA.total;
+  const extraMatch = (t.EXTRAS||[]).find(x => x.code === currency);
+  if (extraMatch) return extraMatch.total;
   return null;
 }
 
@@ -816,6 +913,7 @@ function runReconciliation(){
       <tr class="${r.flagged?'flagged':''}">
         <td class="cur">${r.Monedha}</td>
         <td><input type="number" step="0.01" class="arka-celje-input op-input" data-row-id="${r.rowId}" aria-label="Çelje Arke për ${r.Monedha}" placeholder="0.00"></td>
+        <td><input type="number" step="0.01" class="shtesa-pakesime-input op-input" data-row-id="${r.rowId}" aria-label="Shtesa/Pakësime për ${r.Monedha}" placeholder="+/- 0.00"></td>
         <td>${fmt(r.effBlerje)}</td>
         <td>${fmt(r.effShitje)}</td>
         <td><input type="number" step="0.01" class="uft-terheqje-input op-input" data-row-id="${r.rowId}" aria-label="UFT Tërheqje për ${r.Monedha}" placeholder="0.00"></td>
@@ -843,7 +941,7 @@ function runReconciliation(){
       <div class="table-scroll">
       <table class="ledger">
         <thead><tr>
-          <th>Monedha</th><th>Çelje Arke</th><th>Blerje (bilanc)</th><th>Shitje (bilanc)</th>
+          <th>Monedha</th><th>Çelje Arke</th><th>Shtesa/Pakësime</th><th>Blerje (bilanc)</th><th>Shitje (bilanc)</th>
           <th>UFT Tërheqje</th><th>UFT Pagesa dhe Dërgesa</th><th>Sigupas-sig TPL</th>
           <th>Rezultat i rikalkuluar</th><th>Mbyllje faktike</th><th>Gjendje sipas Sistemit</th>
           <th>Diferenca (Faktike − Sistemi)</th><th>Diferenca (Rezultat − Faktike)</th>
@@ -867,6 +965,9 @@ function runReconciliation(){
   if (!validBilanci.length){
     results.innerHTML = '<div class="empty-note">Asnjë bilanc i lexueshëm.</div>';
   }
+
+  const exportBar = document.getElementById('exportBar');
+  exportBar.style.display = (validBilanci.length && CURRENT_SESSION && CURRENT_SESSION.role === 'admin') ? 'flex' : 'none';
 }
 
 const MARZHI_MANUAL = 0.5; // marzhi i gabimit: 0.5 (ALL ose monedhë e huaj)
@@ -888,16 +989,18 @@ function wireManualInputs(block, tableRows, tolAll, tolFx, marzhi){
     diffCell.classList.toggle('cell-alert', manualFlag);
     r.sysFlag = manualFlag;
     applyRowFlag(rid);
+    persistManualField(rid, { sistemi: inp.value });
   }
 
   function refreshRezultat(rid){
     const r = findRow(rid);
     const tol = r.Monedha === 'ALL' ? tolAll : tolFx;
     const arkaCelje = readNum(block, '.arka-celje-input', rid);
+    const shtesaPakesime = readNum(block, '.shtesa-pakesime-input', rid);
     const uftT = readNum(block, '.uft-terheqje-input', rid);
     const uftP = readNum(block, '.uft-pagesa-input', rid);
     const sig = readNum(block, '.sigupas-input', rid);
-    const rezultat = arkaCelje + r.effBlerje + r.effShitje - uftT + uftP + sig;
+    const rezultat = arkaCelje + shtesaPakesime + r.effBlerje + r.effShitje - uftT + uftP + sig;
     const diferenca = (r.MbylljeFaktike === null) ? null : (rezultat - r.MbylljeFaktike);
     const mismatchDiff = diferenca !== null && Math.abs(diferenca) > tol;
 
@@ -909,6 +1012,13 @@ function wireManualInputs(block, tableRows, tolAll, tolFx, marzhi){
 
     r.ArkaCelje = arkaCelje; r.rezultat = rezultat; r.diferenca = diferenca; r.mismatchDiff = mismatchDiff;
     applyRowFlag(rid);
+    persistManualField(rid, {
+      arkaCelje: block.querySelector(`.arka-celje-input[data-row-id="${CSS.escape(rid)}"]`).value,
+      shtesaPakesime: block.querySelector(`.shtesa-pakesime-input[data-row-id="${CSS.escape(rid)}"]`).value,
+      uftT: block.querySelector(`.uft-terheqje-input[data-row-id="${CSS.escape(rid)}"]`).value,
+      uftP: block.querySelector(`.uft-pagesa-input[data-row-id="${CSS.escape(rid)}"]`).value,
+      sig: block.querySelector(`.sigupas-input[data-row-id="${CSS.escape(rid)}"]`).value,
+    });
   }
 
   function applyRowFlag(rid){
@@ -925,6 +1035,25 @@ function wireManualInputs(block, tableRows, tolAll, tolFx, marzhi){
   block.querySelectorAll('.op-input').forEach(inp => {
     inp.addEventListener('input', () => refreshRezultat(inp.dataset.rowId));
   });
+
+  // rikthe vlerat e ruajtura nga sesionet e mëparshme (të njëjtën ditë)
+  tableRows.forEach(r => {
+    const saved = MANUAL_FIELDS[r.rowId];
+    if (!saved) return;
+    const setVal = (selector, v) => {
+      if (v === undefined || v === null || v === '') return;
+      const inp = block.querySelector(`${selector}[data-row-id="${CSS.escape(r.rowId)}"]`);
+      if (inp) inp.value = v;
+    };
+    setVal('.arka-celje-input', saved.arkaCelje);
+    setVal('.shtesa-pakesime-input', saved.shtesaPakesime);
+    setVal('.uft-terheqje-input', saved.uftT);
+    setVal('.uft-pagesa-input', saved.uftP);
+    setVal('.sigupas-input', saved.sig);
+    setVal('.sistemi-input', saved.sistemi);
+    refreshRezultat(r.rowId);
+    refreshSistemi(r.rowId);
+  });
 }
 
 function readNum(block, selector, rid){
@@ -939,6 +1068,59 @@ function updateStamp(block){
   stamp.textContent = anyFlag ? 'Për kontroll' : 'Balancuar';
   stamp.classList.toggle('bad', anyFlag);
   stamp.classList.toggle('ok', !anyFlag);
+}
+
+// ---------- Eksport në Excel (vetëm administratori) ----------
+document.getElementById('btnExport').addEventListener('click', exportToExcel);
+
+function cellNum(text){
+  if (text === undefined || text === null) return null;
+  const t = text.trim();
+  if (t === '—' || t === '' || t === 'pa numëruar') return null;
+  // formati: pikë për mijëshe, presje për dhjetore (p.sh. "1.447.000,50")
+  const n = Number(t.replace(/\./g, '').replace(',', '.'));
+  return Number.isNaN(n) ? null : n;
+}
+function inputNum(inp){
+  if (!inp || inp.value.trim() === '') return null;
+  const n = Number(inp.value);
+  return Number.isNaN(n) ? null : n;
+}
+
+function exportToExcel(){
+  const wb = XLSX.utils.book_new();
+  const headers = ['Monedha','Çelje Arke','Shtesa/Pakësime','Blerje (bilanc)','Shitje (bilanc)','UFT Tërheqje',
+    'UFT Pagesa dhe Dërgesa','Sigupas-sig TPL','Rezultat i rikalkuluar','Mbyllje Faktike',
+    'Gjendje sipas Sistemit','Diferenca (Faktike − Sistemi)','Diferenca (Rezultat − Faktike)'];
+
+  document.querySelectorAll('#results .turn-block').forEach(block => {
+    const turnLabel = block.querySelector('.turn-head h2').textContent.trim();
+    const rows = [headers];
+    block.querySelectorAll('table.ledger tbody tr').forEach(tr => {
+      const tds = tr.querySelectorAll('td');
+      rows.push([
+        tds[0].textContent.trim(),
+        inputNum(tds[1].querySelector('input')),
+        inputNum(tds[2].querySelector('input')),
+        cellNum(tds[3].textContent),
+        cellNum(tds[4].textContent),
+        inputNum(tds[5].querySelector('input')),
+        inputNum(tds[6].querySelector('input')),
+        inputNum(tds[7].querySelector('input')),
+        cellNum(tds[8].textContent),
+        cellNum(tds[9].textContent),
+        inputNum(tds[10].querySelector('input')),
+        cellNum(tds[11].textContent),
+        cellNum(tds[12].textContent),
+      ]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = headers.map(() => ({ wch: 16 }));
+    XLSX.utils.book_append_sheet(wb, ws, turnLabel.slice(0,31));
+  });
+
+  const today = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `Rakordimi_Arkes_${today}.xlsx`);
 }
 </script>
 </body>
